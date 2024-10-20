@@ -1,0 +1,137 @@
+<?php
+
+namespace App\Controllers;
+
+
+use CodeIgniter\Controller;
+use App\Controllers\BaseController;
+use App\Models\UserModel;
+use CodeIgniter\Database\Exceptions\DatabaseException;
+use Config\Database;
+class User extends BaseController
+{
+    public function login()
+    {
+        $data = [];
+
+        if ($this->request->getMethod() == 'POST') {
+            $rules = [
+                'email' => 'required|min_length[6]|max_length[50]|valid_email',
+                'password' => 'required|min_length[8]|max_length[255]|validateUser[email,password]',
+            ];
+
+            $errors = [
+                'password' => [
+                    'validateUser' => "Email or Password don't match",
+                ],
+            ];
+
+            if (!$this->validate($rules, $errors)) {
+
+                return view('login', [
+                    "validation" => $this->validator,
+                ]);
+
+            } else {
+                $model = new UserModel();
+
+                $user = $model->where('email', $this->request->getVar('email'))
+                    ->first();
+
+                // Storing session values
+                $this->setUserSession($user);
+                // Redirecting to dashboard after login
+                return redirect()->to(base_url('dashboard'));
+
+            }
+        }else{
+            return view('login');
+        }
+    }
+    public function validateUser(string $email, string $password): bool
+    {
+        // Load the UserModel to access the database
+        $model = new UserModel();
+        
+        // Find the user by email
+        $user = $model->where('email', $email)->first();
+        
+        // Check if the user exists and verify the password
+        if ($user && password_verify($password, $user['password'])) {
+            return true; // Valid user
+        }
+        
+        return false; // Invalid user
+    }
+    
+    private function setUserSession($user)
+    {
+        $data = [
+            'id' => $user['id'],
+            'name' => $user['name'],
+            'phone_no' => $user['phone_no'],
+            'email' => $user['email'],
+            'isLoggedIn' => true,
+        ];
+
+        session()->set($data);
+        return true;
+    }
+
+    public function register()
+    {
+        $data = [];
+        
+        if ($this->request->getMethod() == 'POST') {
+            $rules = [
+                'name' => 'required|min_length[3]|max_length[20]',
+                'phone_no' => 'required|min_length[9]|max_length[20]',
+                'email' => 'required|min_length[6]|max_length[50]|valid_email|is_unique[users.email]',
+                'password' => 'required|min_length[8]|max_length[255]',
+                'password_confirm' => 'matches[password]',
+            ];
+
+            if (!$this->validate($rules)) {
+                return view('register', [
+                    "validation" => $this->validator,
+                ]);
+
+            } else {
+                $model = new UserModel();
+
+                $newData = [
+                    'name' => $this->request->getVar('name'),
+                    'phone_no' => $this->request->getVar('phone_no'),
+                    'email' => $this->request->getVar('email'),
+                    'password' => $this->request->getVar('password'),
+                ];
+
+                $model->save($newData);
+                $session = session();
+                $session->setFlashdata('success', 'Successful Registration');
+                return redirect()->to(base_url(''));
+            }
+        }else{
+        return view('register');
+        }
+    }
+
+    public function profile()
+    {
+        $data = [];
+        $model = new UserModel();
+
+        $data['user'] = $model->where('id', session()->get('id'))->first();
+        return view('profile', $data);
+    }
+
+    public function logout()
+    {
+        session()->destroy();
+        return redirect()->to('login');
+    }
+
+    public function index(){
+        return view('dashboard');
+    }
+}
