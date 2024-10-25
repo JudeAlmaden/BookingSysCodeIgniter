@@ -9,6 +9,7 @@ use CodeIgniter\Validation\StrictRules\FormatRules;
 use CodeIgniter\Validation\StrictRules\Rules;
 use App\Validation\Userrules;
 
+
 class Validation extends BaseConfig
 {
     // --------------------------------------------------------------------
@@ -45,6 +46,8 @@ class Validation extends BaseConfig
         'email' => 'required|min_length[6]|max_length[50]|valid_email',
         'password' => 'required|min_length[8]|max_length[255]|validateUser[email,password]',
     ];
+
+
     // --------------------------------------------------------------------
     // Rules
     // --------------------------------------------------------------------

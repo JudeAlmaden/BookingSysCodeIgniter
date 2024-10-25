@@ -22,16 +22,14 @@ class User extends BaseController
 
             $errors = [
                 'password' => [
-                    'validateUser' => "Email or Password don't match",
+                    'validateUser' => "Incorrect email or password",
                 ],
             ];
 
             if (!$this->validate($rules, $errors)) {
-
                 return view('login', [
                     "validation" => $this->validator,
                 ]);
-
             } else {
                 $model = new UserModel();
 
@@ -42,28 +40,11 @@ class User extends BaseController
                 $this->setUserSession($user);
                 // Redirecting to dashboard after login
                 return redirect()->to(base_url('dashboard'));
-
             }
         }else{
             return view('login');
         }
     }
-    public function validateUser(string $email, string $password): bool
-    {
-        // Load the UserModel to access the database
-        $model = new UserModel();
-        
-        // Find the user by email
-        $user = $model->where('email', $email)->first();
-        
-        // Check if the user exists and verify the password
-        if ($user && password_verify($password, $user['password'])) {
-            return true; // Valid user
-        }
-        
-        return false; // Invalid user
-    }
-    
     private function setUserSession($user)
     {
         $data = [
@@ -103,7 +84,7 @@ class User extends BaseController
                     'name' => $this->request->getVar('name'),
                     'phone_no' => $this->request->getVar('phone_no'),
                     'email' => $this->request->getVar('email'),
-                    'password' => $this->request->getVar('password'),
+                    'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
                 ];
 
                 $model->save($newData);
@@ -129,9 +110,5 @@ class User extends BaseController
     {
         session()->destroy();
         return redirect()->to('login');
-    }
-
-    public function index(){
-        return view('dashboard');
     }
 }

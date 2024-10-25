@@ -2,25 +2,59 @@
 
 <?= $this->section("body") ?>
 
+<style>
+    .logo {
+        width: 80px;
+        margin: auto;
+    }
 
-<section class="vh-100 gradient-custom">
+    .logo img {
+        width: 100%;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: 0px 0px 3px #5f5f5f,
+            0px 0px 0px 5px #ecf0f3,
+            8px 8px 15px #a7aaa7,
+            -8px -8px 15px #fff;
+            background-color: white;
+    }
+
+    .shadow{
+        border-radius: inherit;
+        box-shadow: 12px 12px 12px rgba(0, 0, 0, .5), 
+        -10px -10px 10px rgba(0,0,0,0.1) !important;
+    }
+
+  #title{
+    background: linear-gradient(to right, #12c2e9, #c471ed, #f64f59);
+    background-clip: text;
+    color:transparent
+  }
+</style>
+
+<section class="vh-100" style="background-color:#f9f9f9 !important">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-12 col-md-8 col-lg-6 col-xl-5">
         <div class="card bg-dark text-white" style="border-radius: 1rem;">
-          <div class="card-body p-5 text-center">
+          <div class="card-body p-5 text-center shadow">
             <div class="mb-md-5 mt-md-4 pb-5">        
 
+            <div class="logo">
+                <img src="https://www.freepnglogos.com/uploads/logo-chatgpt-png/chatgpt-brand-logo-transparent.png" alt="LogoLangz">
+            </div>
+
               <form class="" action="<?= base_url('') ?>" method="post">
-                <h2 class="fw-bold mb-2 text-uppercase">Ride Booking System</h2>
+                <h2 class="fw-bold my-2 text-uppercase" id="title">Ride Booking System</h2>
                 <p class="text-white-50 mb-5">Please enter your login and password!</p>
 
-                <div data-mdb-input-init class="form-outline form-white mb-4">
-                    <input type="email" id="typeEmailX" class="form-control form-control-lg" name="email" />
+                <div data-mdb-input-init class="form-outline form-white mb-4 form-floating">
+                    <input type="email" id="typeEmailX" class="form-control form-control-lg " name="email" />
                     <label class="form-label" for="typeEmailX">Email</label>
                 </div>
 
-                <div data-mdb-input-init class="form-outline form-white mb-4">
+                <div data-mdb-input-init class="form-outline form-white mb-4 form-floating">
                     <input type="password" id="typePasswordX" class="form-control form-control-lg" name="password"/>
                     <label class="form-label" for="typePasswordX" >Password</label>
                 </div>

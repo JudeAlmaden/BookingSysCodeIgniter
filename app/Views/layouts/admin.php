@@ -6,11 +6,11 @@
     <title><?= $this->renderSection('title') ?></title>
     <link rel="stylesheet" href="<?= base_url('/public/css/style.css') ?>">
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </head>
 <body style="height:100vh">
-    <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark h-100 position-sticky" style="width: 280px;">
+    <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark h-100 position-fixed" style="width: 280px;">
         <a href="/dashboard" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
         <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
         <span class="fs-4">Seat Booking System</span>
@@ -18,25 +18,31 @@
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">           
         <li class="nav-item">
-            <a href="#" class="nav-link active" aria-current="page">
+            <a href="<?= site_url('dashboard') ?>" class="nav-link text-white <?= (current_url() == site_url('dashboard')) ? 'active' : '' ?>" >
             <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
             Home
             </a>
         </li>
         <li>
-            <a href="#" class="nav-link text-white">
+            <a href="<?= site_url('dashboard/routes') ?>" class="nav-link text-white <?= (current_url() == site_url('dashboard/routes')) ? 'active' : '' ?>" >
             <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
-            Vehicles
+            Routes
             </a>
         </li>
         <li>
-            <a href="#" class="nav-link text-white">
+            <a href="<?= site_url('dashboard/busses') ?>" class="nav-link text-white <?= (current_url() == site_url('dasboard/busses')) ? 'active' : '' ?>" >
             <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
-            Scheduled Trips
+            Busses
             </a>
         </li>
         <li>
-            <a href="#" class="nav-link text-white">
+            <a href="<?= site_url('dashboard/schedules') ?>" class="nav-link text-white <?= (current_url() == site_url('dasboard/schedules')) ? 'active' : '' ?>" >
+            <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
+            Schedules
+            </a>
+        </li>
+        <li>
+            <a href="<?= site_url('dashboard/bookings') ?>" class="nav-link text-white <?= (current_url() == site_url('dasboard/bookings')) ? 'active' : '' ?>" >
             <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
             Bookings
             </a>
@@ -61,8 +67,11 @@
     </div>
     
     <!-- Main Content -->
-    <div class="content">
-        <?= $this->renderSection('body') ?>
+    <div class="content"style="margin-left: 280px;">
+        <div class="bg-dark text-secondary p-3" style="box-shadow: inset 5px -1px 5px #1c1c1c;">Greetings</div>
+        <div style="padding: 20px">
+            <?= $this->renderSection('body') ?>
+        </div>
     </div>
 </body>
 </html>

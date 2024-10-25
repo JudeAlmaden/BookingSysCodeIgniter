@@ -14,7 +14,6 @@
     </style>
 </head>
 <body>
-
     <!-- Main Content -->
     <div class="content">
         <?= $this->renderSection('body') ?>
