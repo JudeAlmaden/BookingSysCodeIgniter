@@ -4,10 +4,11 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateUsersTable extends Migration
+class RoutesTable extends Migration
 {
     public function up()
     {
+        
         $this->forge->addField([
             'id'          => [
                 'type'           => 'INT',
@@ -19,22 +20,6 @@ class CreateUsersTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => '120',
             ],
-            'email'       => [
-                'type'       => 'VARCHAR',
-                'constraint' => '120',
-            ],
-            'phone_no'    => [
-                'type'       => 'VARCHAR',
-                'constraint' => '20',
-            ],
-            'password'    => [
-                'type'       => 'VARCHAR',
-                'constraint' => '255',
-            ],
-            'priviledge'    => [
-                'type'       => 'VARCHAR',
-                'constraint' => '255',
-            ],
             'created_at'  => [
                 'type'       => 'DATETIME',
                 'null'       => true,
@@ -45,13 +30,12 @@ class CreateUsersTable extends Migration
             ],
         ]);
         $this->forge->addKey('id', true);  // Primary key
-        $this->forge->createTable('users');
-
+        $this->forge->createTable('routes');
 
     }
 
     public function down()
     {
-        $this->forge->dropTable('users');
+        $this->forge->dropTable('routes');
     }
 }

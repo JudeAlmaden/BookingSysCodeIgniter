@@ -3,6 +3,9 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\UserModel;
+use App\Models\Routes;
+use App\Models\RouteStops;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class AdminController extends BaseController
@@ -11,7 +14,5 @@ class AdminController extends BaseController
         return view('dashboard');
     }
 
-    public function routes(){
-        return view('admin/routes');
-    }
 }
+
