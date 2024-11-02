@@ -18,12 +18,12 @@ class RoutesController extends BaseController
         } else {
             $routesModel = new Routes();
     
-            $routesPerPage = 20;  // Define the number of routes to show per page
-            $data['routes'] = $routesModel->paginate($routesPerPage, 'default', $page);
+            $perPage = 20;  // Define the number of routes to show per page
+            $data['routes'] = $routesModel->paginate($perPage, 'default', $page);
             $data['pager'] = $routesModel->pager;  // Get pager object
             $data['currentPage'] = $page; 
             $data['totalRoutes'] = $routesModel->countAll();  // Get total routes count
-            $data['routesPerPage'] = $routesPerPage;  // Pass per page value to the view
+            $data['perPage'] = $perPage;  // Pass per page value to the view
         }
     
         return view('admin/routes', $data);
@@ -126,8 +126,16 @@ class RoutesController extends BaseController
                 return redirect()->to('dashboard/routes');
             }
             
-            // Insert the Route
+    
             $routesModel = new Routes();
+            $exists = $routesModel->where('name', $this->request->getVar('routeName'))->findAll();
+
+            if (!empty($exists)) {
+                session()->setFlashdata('errors', 'Name already exsist');
+                return redirect()->to('dashboard/routes');
+            }
+            
+            // Insert the Route
             $newRoute = [
                 'name' => $this->request->getVar('routeName'),
             ];
@@ -163,4 +171,53 @@ class RoutesController extends BaseController
         session()->setFlashdata('errors', 'Incorrect Method');
         return redirect()->to('dashboard/routes');
     }
+    public function getRoutes($name = null)
+    {   
+        $routesModel = new Routes();
+    
+        // If a name parameter is provided, filter the routes and limit results
+        if ($name) {
+            $routes = $routesModel->like('name', $name)->limit(5)->findAll(); // Select up to 5 routes with names containing the search term
+        } else {
+            $routes = $routesModel->findAll(); // Fetch all routes if no name parameter is provided
+        }
+    
+        // Prepare the response data
+        $response = [];
+        foreach ($routes as $route) {
+            $response[] = [
+                'id' => $route['id'], // Adjust according to your database schema
+                'name' => $route['name'],
+            ];
+        }
+    
+        // Return the response as JSON
+        return $this->response->setJSON($response);
+    }
+
+    public function getStops($id = null)
+    {   
+        $routesModel = new RouteStops();
+    
+        // If a name parameter is provided, filter the routes and limit results
+        if ($id) {
+            $stops = $routesModel->like('route', $id)->orderBy('index', 'ASC')->findAll(); // Select up to 5 routes with names containing the search term
+        } else {
+            $stops = $routesModel->findAll(); // Fetch all routes if no name parameter is provided
+        }
+    
+        // Prepare the response data
+        $response = [];
+        foreach ($stops as $stop) {
+            $response[] = [
+                'id' => $stop['id'], 
+                'name' => $stop['name'],
+                'distance' => $stop['distance'],
+            ];
+        }
+    
+        // Return the response as JSON
+        return $this->response->setJSON($response);
+    }
+
 }

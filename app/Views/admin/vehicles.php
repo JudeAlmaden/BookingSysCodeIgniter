@@ -12,27 +12,33 @@
       </div>
 
       <div class="modal-body">
-        <form id="create-route" class="position-relative" action="<?= site_url('dashboard/busses') ?>" method="POST">
+        <form id="add-vehicle" class="position-relative" action="<?= site_url('dashboard/vehicles') ?>" method="POST">
           <div class="form-group">
-            <label for="exampleInputEmail1">Email address</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            <label for="vehicleID">Vehicle Info</label>
+            <input type="text" class="form-control" id="vehicleID" placeholder="Vehicle tag or ID" required name="tag">
+            <small id="tag" class="form-text text-muted">Example: Lucena Lines No. 1238</small>
+            <input type="number" class="form-control" id="numberOfSeats" placeholder="Max Seats" required name="number_seats">
+            <small id="tag" class="form-text text-muted">Example: 26</small>
+            <input type="text" class="form-control" id="vehicleType" placeholder="Type of vehicle" required name="type">
+            <small id="tag" class="form-text text-muted">Example: Bus, Taxi, Ferry Boat</small>
+            <br>
+            <label for="vehivehicleDescriptioncleID">Vehicle Description</label>
+            <textarea class="form-control" id="vehicleDescription" rows="3" required name="description"></textarea>
           </div>
+
+          <hr>
+
           <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            <label for="vehicleID">Fare information</label>
+            <input type="number" class="form-control mb-2" id="baseFare" placeholder="Base Fare"required  name="base_fare">
+            <input type="number" class="form-control" id="baseFare" placeholder="Per Kilometer" required name="per_kilometer">
           </div>
-          <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Check me out</label>
-          </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
         </form>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary" form="create-route">Add</button>
+        <button type="submit" class="btn btn-primary" form="add-vehicle">Add</button>
       </div>
     </div>
   </div>
@@ -56,32 +62,33 @@
   <table class="table table-striped table-hoverable w-100">
     <thead>
       <tr class="bg-dark text-light">
-        <th scope="col-1">#</th>
-        <th scope="col-9">Route Name</th>
-        <th scope="col-2">Controls</th>
+        <th >#</th>
+        <th >Tag</th>
+        <th >Description</th>
+        <th >Description</th>
+        <th >Number of Seats</th>
+        <th >Base Fare</th>
+        <th >Per kilimeter</th>
+        <th >Controls</th>
       </tr>
     </thead>
     <tbody>
-      <?php if(!empty($routes)): ?>
-          <?php foreach($routes as $route): ?>
+      <?php if(!empty($vehicles)): ?>
+          <?php foreach($vehicles as $vehicle): ?>
               <tr>
-                  <td class="col-1"><?= $route['id'] ?></td>
-                  <td class="col-9"><?= $route['name'] ?></td>
-                  <td class="col-2">
-                    <div class="row">
-                      <div class="col-6">
-                        <form action="<?= site_url('dashboard/routes/view/' . $route['id']) ?>" method="GET"><button type="submit" class="btn btn-primary w-100" >View</input></form>
-                      </div>
-                      <div class="col-6">
-                        <form action="<?= site_url('dashboard/routes/delete/' . $route['id']) ?>" method="POST"><button type="submit" class="btn btn-danger w-100">Delete</input></form>
-                      </div>
-                    </div>
-                  </td>
+                  <td ><?= $vehicle['id'] ?></td>
+                  <td ><?= $vehicle['tag'] ?></td>
+                  <td ><?= $vehicle['type'] ?></td>
+                  <td ><?= $vehicle['description'] ?></td>
+                  <td ><?= $vehicle['number_seats'] ?></td>
+                  <td ><?= $vehicle['base_fare'] ?></td>
+                  <td ><?= $vehicle['per_kilometer'] ?></td>
+                  <td >Edit</td>
               </tr>
           <?php endforeach; ?>
       <?php else: ?>
         <tr>
-            <td colspan="3">No routes found</td>
+            <td colspan="3">No vehicles</td>
         </tr>
       <?php endif; ?>
     </tbody>
@@ -94,7 +101,7 @@
           </li>
 
           <?php
-          $totalPages = ceil($totalRoutes / $routesPerPage);
+          $totalPages = ceil($totalRoutes / $perPage);
           for ($i = 1; $i <= $totalPages; $i++): ?>
               <li class="page-item <?= ($currentPage == $i) ? 'active' : '' ?>">
                   <a class="page-link" href="<?= site_url("dashboard/routes/$i") ?>"><?= $i ?></a>

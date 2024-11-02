@@ -11,6 +11,7 @@ class DropAllTables extends Migration
         // $this->forge->dropTable('users', true);
         // $this->forge->dropTable('routes', true);
         // $this->forge->dropTable('route_stops', true);
+        // $this->forge->dropTable('vehicles', true);
         // Add more tables as necessary
     }
 
