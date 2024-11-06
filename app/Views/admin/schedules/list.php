@@ -31,7 +31,7 @@
       </tr>
     </thead>
     <tbody>
-      <?php if(!empty($schedules)): ?>
+      <?php if(isset($schedule) && !empty($schedules)): ?>
           <?php foreach($schedules as $schedule): ?>
               <tr>
                   <td class="col-1"><?= $schedule['id'] ?></td>
@@ -49,25 +49,7 @@
     </tbody>
   </table>
 
-  <nav aria-label="Page navigation example">
-      <ul class="pagination justify-content-end">
-          <li class="page-item <?= ($currentPage == 1) ? 'disabled' : '' ?>">
-              <a class="page-link" href="<?= site_url("dashboard/routes/" . ($currentPage - 1)) ?>" tabindex="-1" aria-disabled="true">Previous</a>
-          </li>
 
-          <?php
-          $totalPages = ceil($totalRoutes / $perPage);
-          for ($i = 1; $i <= $totalPages; $i++): ?>
-              <li class="page-item <?= ($currentPage == $i) ? 'active' : '' ?>">
-                  <a class="page-link" href="<?= site_url("dashboard/routes/$i") ?>"><?= $i ?></a>
-              </li>
-          <?php endfor; ?>
-
-          <li class="page-item <?= ($currentPage == $totalPages) ? 'disabled' : '' ?>">
-              <a class="page-link" href="<?= site_url("dashboard/routes/" . ($currentPage + 1)) ?>">Next</a>
-          </li>
-      </ul>
-  </nav>
 </div>
 
 <?php if (session()->getFlashdata('errors')): ?>
