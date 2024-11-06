@@ -23,9 +23,11 @@ $routes->get('dashboard/schedules', 'ScheduleController::index', ['filter' => 'n
 $routes->match(['get', 'post'],'dashboard/schedules/create', 'ScheduleController::create', ['filter' => 'noauth']);
 
 //For Api call
-$routes->get('dashboard/routes/get/(:any)', 'RoutesController::getRoutes/$1', ['filter' => 'noauth']);
-$routes->get('dashboard/vehicles/get/(:any)', 'VehiclesController::getVehicles/$1', ['filter' => 'noauth']);
-$routes->get('dashboard/stops/get/(:num)', 'RoutesController::getStops/$1', ['filter' => 'noauth']);
+$routes->get('routes/get/(:any)', 'RoutesController::getRoutes/$1', ['filter' => 'noauth']);
+$routes->get('vehicles/get/(:any)', 'VehiclesController::getVehicles/$1', ['filter' => 'noauth']);
+$routes->get('stops/get/(:num)', 'RoutesController::getStops/$1', ['filter' => 'noauth']); //Get the stops associated with a route
+$routes->get('stops/search/(:any)', 'RoutesController::searchStop/$1', ['filter' => 'noauth']);
+$routes->get('vehicles/type/get/(:any)', 'VehiclesController::typeGet/$1', ['filter' => 'noauth']);
 
 //Utils
 $routes->get('/profile', 'User::profile', ['filter' => 'auth']);
@@ -33,4 +35,4 @@ $routes->get('/logout', 'User::logout');
 
 
 //For user booking
-$routes->get('/homepage', 'BookingController::index', ['filter' => 'noauth']);
+$routes->match(['get', 'post'],'homepage', 'BookingController::index', ['filter' => 'noauth']);

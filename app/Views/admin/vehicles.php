@@ -22,11 +22,12 @@
             <input type="text" class="form-control" id="vehicleType" placeholder="Type of vehicle" required name="type">
             <small id="tag" class="form-text text-muted">Example: Bus, Taxi, Ferry Boat</small>
             <br>
+            <br>
             <label for="vehivehicleDescriptioncleID">Vehicle Description</label>
             <textarea class="form-control" id="vehicleDescription" rows="3" required name="description"></textarea>
           </div>
 
-          <hr>
+          <hr><br>
 
           <div class="form-group">
             <label for="vehicleID">Fare information</label>

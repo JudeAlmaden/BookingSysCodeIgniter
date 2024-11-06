@@ -197,13 +197,13 @@ class RoutesController extends BaseController
 
     public function getStops($id = null)
     {   
-        $routesModel = new RouteStops();
+        $routeStopsModel = new RouteStops();
     
         // If a name parameter is provided, filter the routes and limit results
         if ($id) {
-            $stops = $routesModel->like('route', $id)->orderBy('index', 'ASC')->findAll(); // Select up to 5 routes with names containing the search term
+            $stops = $routeStopsModel->like('route', $id)->orderBy('index', 'ASC')->findAll(); // Select up to 5 routes with names containing the search term
         } else {
-            $stops = $routesModel->findAll(); // Fetch all routes if no name parameter is provided
+            $stops = $routeStopsModel->findAll(); // Fetch all routes if no name parameter is provided
         }
     
         // Prepare the response data
@@ -220,4 +220,26 @@ class RoutesController extends BaseController
         return $this->response->setJSON($response);
     }
 
+    public function searchStop($str = null){
+
+        $routeStopsModel = new RouteStops();
+    
+        // If a name parameter is provided, filter the routes and limit results
+        if ($str) {
+            $stops = $routeStopsModel->like('name', $str)->orderBy('index', 'ASC')->findAll(); // Select up to 5 routes with names containing the search term
+        } else {
+            $stops = $routeStopsModel->findAll(); // Fetch all routes if no name parameter is provided
+        }
+
+        // Prepare the response data
+        $response = [];
+        foreach ($stops as $stop) {
+            $response[] = [
+                'id' => $stop['id'], 
+                'name' => $stop['name'],
+            ];
+        }
+        return $this->response->setJSON($response);
+
+    }
 }

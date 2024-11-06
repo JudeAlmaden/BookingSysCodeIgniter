@@ -85,9 +85,6 @@
     </div>
 <?php endif; ?>
 
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <script>
 $(document).ready(function() {
     let minimumETA = formatDate(addDays(new Date(), 1)); 
@@ -98,7 +95,7 @@ $(document).ready(function() {
         $('.stops-container').empty();
         
         if (query.length > 0) {
-          let url = `<?= site_url("dashboard/routes/get/") ?>${encodeURIComponent(query)}`;
+          let url = `<?= site_url("routes/get/") ?>${encodeURIComponent(query)}`;
             $.ajax({
                 url: url, // Your API endpoint
                 type: 'GET',
@@ -131,7 +128,7 @@ $(document).ready(function() {
 
         $('.stops-container').empty();
         if (query.length > 0) {
-            let url = `<?= site_url("dashboard/vehicles/get/")?>${encodeURIComponent(query)}`;
+            let url = `<?= site_url("vehicles/get/")?>${encodeURIComponent(query)}`;
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -182,7 +179,7 @@ $(document).ready(function() {
       $('#selected-route-id').val(routeId); 
       $('#suggestions-route').empty(); 
 
-      let url = `<?= site_url("dashboard/stops/get/") ?>${encodeURIComponent(routeId)}`;
+      let url = `<?= site_url("stops/get/") ?>${encodeURIComponent(routeId)}`;
         $.ajax({
             url: url, // Your API endpoint
             type: 'GET',
@@ -224,10 +221,8 @@ $(document).ready(function() {
     });
 
     $(document).on('click', function(e) {
-        if (!$(e.target).closest('#route-input').length) {
-            $('#suggestions-route').empty();
-            $('#suggestions-vehicles').empty();
-        }
+        $('#suggestions-route').empty();
+        $('#suggestions-vehicles').empty();
     });
     
     $(document).on('input', '.stops-container input[type="datetime-local"]', function(e) {
