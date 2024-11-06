@@ -14,7 +14,7 @@
       <div class="modal-body">
         <form id="add-vehicle" class="position-relative" action="<?= site_url('dashboard/vehicles') ?>" method="POST">
           <div class="form-group">
-            <label for="vehicleID">Vehicle Info</label>
+            <label for="vehicleID border-light">Vehicle Info</label>
             <input type="text" class="form-control" id="vehicleID" placeholder="Vehicle tag or ID" required name="tag">
             <small id="tag" class="form-text text-muted">Example: Lucena Lines No. 1238</small>
             <input type="number" class="form-control" id="numberOfSeats" placeholder="Max Seats" required name="number_seats">
@@ -23,14 +23,14 @@
             <small id="tag" class="form-text text-muted">Example: Bus, Taxi, Ferry Boat</small>
             <br>
             <br>
-            <label for="vehivehicleDescriptioncleID">Vehicle Description</label>
+            <label for="vehivehicleDescriptioncleID border-light">Vehicle Description</label>
             <textarea class="form-control" id="vehicleDescription" rows="3" required name="description"></textarea>
           </div>
 
           <hr><br>
 
           <div class="form-group">
-            <label for="vehicleID">Fare information</label>
+            <label for="vehicleID border-light">Fare information</label>
             <input type="number" class="form-control mb-2" id="baseFare" placeholder="Base Fare"required  name="base_fare">
             <input type="number" class="form-control" id="baseFare" placeholder="Per Kilometer" required name="per_kilometer">
           </div>
