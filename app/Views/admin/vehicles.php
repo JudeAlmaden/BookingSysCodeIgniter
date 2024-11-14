@@ -45,10 +45,16 @@
   </div>
 </div>
 
+
 <div class="container">
   <div class="row align-items-center">
     <div class="col">
-      <h1>Your Vehicles</h1>
+      <h1>Routes</h1>
+    </div>
+    <div class="col d-flex justify-content-end">
+      <button type="button" class="btn btn-primary btn-lg p-3" data-bs-toggle="modal" data-bs-target="#create">
+        <i class="bi bi-plus-circle me-2"></i> <span class="fw-bold">Add Vehicle</span>
+      </button>
     </div>
   </div>
 </div>
@@ -56,9 +62,6 @@
 <hr>
 
 <div class="container-fluid border border-light border-1 shadow-sm rounded-3 p-5 m-0 ">
-  <button type="button" class="btn btn-primary p-2 mb-3" data-bs-toggle="modal" data-bs-target="#create">
-    Add Vehicle
-  </button>
   <!-- Button trigger modal -->
   <table class="table table-striped table-hoverable w-100">
     <thead>

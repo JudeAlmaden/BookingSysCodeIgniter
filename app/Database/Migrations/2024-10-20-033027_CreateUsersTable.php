@@ -34,6 +34,7 @@ class CreateUsersTable extends Migration
             'priviledge'    => [
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
+                'default'    => 'user',
             ],
             'created_at'  => [
                 'type'       => 'DATETIME',

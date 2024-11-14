@@ -21,7 +21,7 @@
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">           
         <li class="nav-item">
-            <a href="<?= site_url('dashboard') ?>" class="nav-link text-white <?= (current_url() == site_url('dashboard')) ? 'active' : '' ?>" >
+            <a href="<?= base_url('dashboard') ?>" class="nav-link text-white <?= (current_url() == site_url('dashboard')) ? 'active' : '' ?>" >
             <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
             Home
             </a>
@@ -29,25 +29,25 @@
 
         
         <li>
-            <a href="<?= site_url('dashboard/routes') ?>" class="nav-link text-white <?= (strpos(current_url(), site_url('dashboard/routes')) !== false) ? 'active' : '' ?>">
+            <a href="<?= base_url('dashboard/routes/1') ?>" class="nav-link text-white <?= (strpos(current_url(), site_url('dashboard/routes')) !== false) ? 'active' : '' ?>">
             <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
             Routes
             </a>
         </li>
         <li>
-            <a href="<?= site_url('dashboard/vehicles') ?>" class="nav-link text-white <?= (strpos(current_url(), site_url('dashboard/vehicles')) !== false) ? 'active' : '' ?>" >
+            <a href="<?= base_url('dashboard/vehicles/1') ?>" class="nav-link text-white <?= (strpos(current_url(), site_url('dashboard/vehicles')) !== false) ? 'active' : '' ?>" >
             <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
             Vehicles
             </a>
         </li>
         <li>
-            <a href="<?= site_url('dashboard/schedules') ?>" class="nav-link text-white <?= (strpos(current_url(), site_url('dashboard/schedules')) !== false) ? 'active' : '' ?>" >
+            <a href="<?= base_url('dashboard/schedules/1') ?>" class="nav-link text-white <?= (strpos(current_url(), site_url('dashboard/schedules')) !== false) ? 'active' : '' ?>" >
             <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
             Schedules
             </a>
         </li>
         <li>
-            <a href="<?= site_url('dashboard/bookings') ?>" class="nav-link text-white <?= (strpos(current_url(), site_url('dashboard/bookings')) !== false) ? 'active' : '' ?>" >
+            <a href="<?= base_url('dashboard/bookings/1') ?>" class="nav-link text-white <?= (strpos(current_url(), site_url('dashboard/bookings')) !== false) ? 'active' : '' ?>" >
             <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
             Bookings
             </a>

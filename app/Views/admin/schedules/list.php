@@ -6,20 +6,22 @@
 <div class="container">
   <div class="row align-items-center">
     <div class="col">
-      <h1>Scheduled Trips</h1>
+      <h1>Routes</h1>
+    </div>
+    <div class="col d-flex justify-content-end">
+    <form method="GET" action="<?= site_url('dashboard/schedules/create/') ?>">
+        <button type="submit" class="btn btn-primary btn-lg p-3" data-bs-toggle="modal" data-bs-target="#create">
+            <i class="bi bi-plus-circle me-2"></i> <span class="fw-bold">Schedule a Trip</span>
+        </button>
+    </form>
     </div>
   </div>
 </div>
 
+
 <hr>
 
 <div class="container-fluid border border-light border-1 shadow-sm rounded-3 p-5 m-0 ">
-  <form method="GET" action="<?= site_url('dashboard/schedules/create/') ?>">
-    <button type="submit" class="btn btn-primary p-2 mb-3" >
-      Schedule a Trip
-    </button>
-  </form>
-
   <table class="table table-striped table-hoverable w-100">
     <thead>
       <tr class="bg-dark text-light">
@@ -34,7 +36,7 @@
           <?php foreach($schedules as $schedule): ?>
               <tr>
                   <td class="col-1"><?= $schedule['trip_id'] ?></td>
-                  <td class="col-1"><?= $schedule['tag'] ?></td>
+                  <td class="col-1"><?= $schedule['vehicle_name'] ?></td>
                   <td class="col-1"><?= $schedule['departure']?></td>
                   <td class="col-1"><?= $schedule['arrival'] ?></td>
               </tr>

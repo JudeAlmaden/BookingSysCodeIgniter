@@ -18,12 +18,37 @@
             background-clip: text;
             color:transparent
         }
+   
+        /* Custom scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+        ::-webkit-scrollbar {
+            width: 10px;  /* Width of the scrollbar */
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #e0e0e0;  /* Track color */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #555;  /* Scrollbar thumb color */
+            border: none;  /* No border for thumb */
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #333;  /* Scrollbar thumb color on hover */
+        }
+
+        /* Custom scrollbar for Firefox */
+        html {
+            scrollbar-width: thin;  /* Thin scrollbar */
+            scrollbar-color: #555 #e0e0e0;  /* Thumb color and track color */
+        }
+
     </style>
 </head>
 <body style="height:100vh">
         
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-    <a class="navbar-brand ms-2" id="title" href="<?= site_url('homepage') ?>">Booking.IO</a>
+    <a class="navbar-brand ms-2" id="title" href="<?= base_url('homepage') ?>">Booking.IO</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -31,13 +56,10 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav w-100">
             <li class="nav-item active">
-                <a class="nav-link" href="<?= site_url('homepage') ?>">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="<?= base_url('homepage') ?>">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item ">
-                <a class="nav-link" href="#">My Bookings</a>
-            </li>
-            <li class="nav-item ">
-                <a class="nav-link" href="#">Settings</a>
+                <a class="nav-link" href="<?= base_url('homepage/bookings') ?>">Bookings & Payments</a>
             </li>
             <li class="nav-item m-auto me-5">  
               <a class="nav-link" href="#">Logout</a>
@@ -46,14 +68,16 @@
     </div>
 </nav>
 
-<?= $this->renderSection('body') ?>
+<div class="col-12 min-vh-100">
+    <?= $this->renderSection('body') ?>
+</div>
+
 
 <div class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-dark">
-    <!-- Copyright -->
     <div class="text-white mb-3 mb-md-0">
-      Copyright © 2024. All rights reserved. 
+    Copyright © 2024. All rights reserved. 
     </div>
-    <!-- Copyright -->
 </div>
+
 </body>
 </html>

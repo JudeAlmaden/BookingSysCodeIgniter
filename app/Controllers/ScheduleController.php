@@ -8,7 +8,7 @@ use App\Models\SchedulesModel;
 
 class ScheduleController extends BaseController
 {
-    public function index()
+    public function index($page = null)
     {
         $page = $page ?? 1; 
         $scheduleModel = new SchedulesModel();
@@ -20,7 +20,6 @@ class ScheduleController extends BaseController
         $data['currentPage'] = $page; 
         $data['totalRoutes'] = $scheduleModel->countAll();  // Get total routes count
         $data['perPage'] = $perPage;  // Pass per page value to the view
-
 
         return view ('admin/schedules/list', $data);
     }
@@ -145,7 +144,6 @@ class ScheduleController extends BaseController
     
         return count($rs) > 0; // If there are any results, there is an overlap
     }
-    
 
     function generateUniqueID() {    
         // Instantiate the model

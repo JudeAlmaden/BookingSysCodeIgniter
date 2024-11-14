@@ -44,7 +44,7 @@ class Bookings extends Migration
             'status' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '50',
-                'null'       => false,
+                'default'    => 'Pending', 
             ],
             'from'        => [
                 'type'       => 'VARCHAR',

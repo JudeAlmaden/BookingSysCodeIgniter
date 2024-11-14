@@ -165,4 +165,29 @@ class BookingController extends BaseController
         }
     }
  
+    public function bookingsUser(){
+        return view('customer/bookings');
+    }
+
+    public function bookingsAdmin($page = null)
+    {
+        $page = $page ?? 1;  // Default to page 1 if not set
+        $bookingsModel = new Bookings();
+        $perPage = 20;
+        $data['bookings'] = $bookingsModel->where('status', 'pending')  // Filter by pending status
+                                            ->paginate($perPage, 'default', $page);
+
+        $data['pager'] = $bookingsModel->pager;
+
+        $data['currentPage'] = $page;
+        $data['totalBookings'] = $bookingsModel->where('status', 'Pending')->countAllResults();  // Count pending bookings
+        $data['perPage'] = $perPage;  
+        // Load the view and pass the data
+        return view('admin/bookings', $data);
+    }
+    
+    
+    public function payments(){
+        return view('customer/bookings');
+    }
 }
