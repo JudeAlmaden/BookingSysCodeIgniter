@@ -83,5 +83,30 @@ class VehiclesController extends BaseController
         // Return the response as JSON
         return $this->response->setJSON($response);
     }
+
+    public function getVehiclesType($type = null)
+    {   
+        $vehiclesModel = new Vehicles();
+    
+        if ($type != "Any") {
+            $vehicles = $vehiclesModel->like('type', $type)
+            ->groupBy('type')
+            ->limit(5)
+            ->findAll(); 
+        } else {
+            $vehicles = $vehiclesModel->findAll(); 
+        }
+    
+        // Prepare the response data
+        $response = [];
+        foreach ($vehicles as $vehicle) {
+            $response[] = [
+                'type' => $vehicle['type'],
+            ];
+        }
+    
+        // Return the response as JSON
+        return $this->response->setJSON($response);
+    }
 }
     

@@ -24,6 +24,7 @@ class RouteStopsTable extends Migration
             'name'        => [
                 'type'       => 'VARCHAR',
                 'constraint' => '120',
+                'null' => false,
             ],
             'distance'        => [
                 'type'           => 'INT',

@@ -4,10 +4,11 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class Schedules extends Migration
+class Bookings extends Migration
 {
     public function up()
     {
+        
         $this->forge->addField([
             'id' => [
                 'type'           => 'INT',
@@ -15,7 +16,7 @@ class Schedules extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'vehicle_id' => [
+            'user_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
@@ -25,16 +26,17 @@ class Schedules extends Migration
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'ETA' => [
-                'type' => 'DATETIME',
-                'null' => false,
-            ],
-            'stop_index' => [  
+            'distance' => [  
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'reservations' => [  
+            'num_seats' => [  
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+            ],
+            'price' => [  
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
@@ -44,15 +46,15 @@ class Schedules extends Migration
                 'constraint' => '50',
                 'null'       => false,
             ],
-            'stop_name' => [
+            'from'        => [
                 'type'       => 'VARCHAR',
-                'constraint' => '50',
-                'null'       => false,
+                'constraint' => '120',
+                'null' => false,
             ],
-            'distance' => [
-                'type'       => 'INT',
-                'constraint' => 11,
-                'unsigned'   => true,
+            'to'        => [
+                'type'       => 'VARCHAR',
+                'constraint' => '120',
+                'null' => false,
             ],
             'created_at'  => [
                 'type'       => 'DATETIME',
@@ -65,12 +67,11 @@ class Schedules extends Migration
         ]);
     
         $this->forge->addKey('id', true);  // Primary key
-        $this->forge->addForeignKey('vehicle_id', 'vehicles', 'id', 'CASCADE', 'CASCADE');  // Foreign key
-        $this->forge->createTable('schedules');
+        $this->forge->createTable('bookings');
     }        
 
     public function down()
     {
-        $this->forge->dropTable('schedules');
+        $this->forge->dropTable('bookings');
     }
 }

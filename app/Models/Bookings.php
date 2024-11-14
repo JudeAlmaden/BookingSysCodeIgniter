@@ -3,38 +3,34 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use Exception;
+use PDOException;
 
-class Schedules extends Model
+class Bookings extends Model
 {
-    protected $table            = 'schedules';
+    protected $table            = 'bookings';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = ['user_id','trip_id', 'distance','num_seats', 'price', 'status','from','to'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
 
     protected array $casts = [];
-    protected array $castHandlers = ['vehicle_id','trip_id','index','status','ETA'];
+    protected array $castHandlers = [];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [
-        'vehicle_id'    => 'required|integer',
-        'index'         => 'required|integer',
-        'trip_id'       => 'required|string|max_length[50]',
-        'ETA'           => 'required|valid_date',
-        'status'        => 'required|string|max_length[50]',
-    ];
+    protected $validationRules      = [];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
@@ -49,4 +45,5 @@ class Schedules extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+    
 }

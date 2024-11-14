@@ -39,7 +39,7 @@ class User extends BaseController
                 // Storing session values
                 $this->setUserSession($user);
                 // Redirecting to dashboard after login
-                return redirect()->to(base_url('dashboard'));
+                return redirect()->to(base_url('homepage'));
             }
         }else{
             return view('login');

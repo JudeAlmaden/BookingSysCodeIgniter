@@ -4,34 +4,25 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
-use App\Models\Schedules;
+use App\Models\SchedulesModel;
 
 class ScheduleController extends BaseController
 {
     public function index()
     {
-        $page = $page ?? 1;  // Default to page 1 if not set
+        $page = $page ?? 1; 
+        $scheduleModel = new SchedulesModel();
+        $perPage = 20;  
 
-        if ($this->request->getMethod() === 'POST') {
+        // Get the result as an array
+        $data["schedules"] = $scheduleModel->getTripsWithDepartureArrival();
+        $data['pager'] = $scheduleModel->pager;  // Get pager object
+        $data['currentPage'] = $page; 
+        $data['totalRoutes'] = $scheduleModel->countAll();  // Get total routes count
+        $data['perPage'] = $perPage;  // Pass per page value to the view
 
-        } else {
-            // $scheduleModel = new Schedules();
 
-            // $perPage = 20;  // Define the number of routes to show per page
-            // $data['schedules'] =  $data['schedules'] = $scheduleModel
-            //         ->select('scheduledRoutes.*, vehicles.tag AS vehicle_tag, vehicles.id AS vehicle_id, routes.id as route_id, routes.name as route_name')
-            //         ->join('vehicles', 'scheduledRoutes.vehicle_id = vehicles.id')
-            //         ->join('routes', 'scheduledRoutes.route_id = routes.id')
-            //         ->paginate($perPage, 'default', $page);
-    
-            // $data['pager'] = $scheduleModel->pager;  // Get pager object
-            // $data['currentPage'] = $page; 
-            // $data['totalRoutes'] = $scheduleModel->countAll();  // Get total routes count
-            // $data['perPage'] = $perPage;  // Pass per page value to the view
-        }
-        // return view ('admin/schedules/list', $data);
-        return view ('admin/schedules/list');
-        
+        return view ('admin/schedules/list', $data);
     }
 
     public function create()
@@ -61,10 +52,12 @@ class ScheduleController extends BaseController
                 return view('admin/schedules/create'); // Return to the view
             }
     
-            //Validate count of eta and stops
-            if (!isset($_POST['eta']) || !isset($_POST['stop_id']) || count($_POST['eta']) !== count($_POST['stop_id'])) {
-                session()->setFlashdata('error', "The number of stops and ETA entries does not match.");
+            //Validate count of eta, stops, and name of stop 
+            //Ensure that the number of stops is not less than 2
+            if (!isset($_POST['eta']) || !isset($_POST['name']) || !isset($_POST['distance'])) {
+                session()->setFlashdata('error', "The number of data entry for stops does not match.");
                 return view('admin/schedules/create'); // Return to the view
+
             }
 
             $this->insert();
@@ -76,71 +69,95 @@ class ScheduleController extends BaseController
 
     public function insert() {
         // Models
-        $scheduleModel = new Schedules();
+        $scheduleModel = new SchedulesModel();
 
-        // Ensure ETA values are valid
+        // get the arrays
         $eta = $this->request->getPost('eta');
-        if (empty($eta) || count($eta) < 2) {
-            return redirect()->back()->with('errors', 'Invalid ETA data.');
-        }
-    
+        $stopName = $this->request->getPost('name');
+        $distance = $this->request->getPost('distance');
+        $vehicleId = (int)$this->request->getPost('vehicle_id');
+
         // Check if the vehicle already has a schedule with overlapping times    
         $firstETA = date('Y-m-d H:i:s', strtotime($eta[0]));
         $lastETA = date('Y-m-d H:i:s', strtotime(end($eta)));
-        $vehicleId = (int)$this->request->getPost('vehicle_id');
-        $existingSchedule = $scheduleModel
-            ->where('vehicle_id', $vehicleId)
+        
+        // Handle case where there is an overlapping schedule, if there is then exit 
+        if ($this->alreadyHasSchedule($firstETA, $lastETA, $vehicleId)) {
+            return redirect()->back()->with('errors', 'The vehicle has an overlapping schedule.');
+
+        }else{
+            //Insert
+            $data = [];
+            $index = 0;
+            $tripId = $this->generateUniqueId();
+            $eta = $this->request->getPost('eta');
+
+            // create a unique Id for the scheduled tip
+            while ($this->idExists($tripId)) {
+                // If it exists, generate a new ID
+                $tripId = $this->generateUniqueId();
+            }
+
+            //Add each scheduled stop
+            while($index < count($_POST['eta'])){
+                $data[] = [
+                    'vehicle_id' => $vehicleId,
+                    'trip_id' => $tripId, // Ensure stop_id is cast to int
+                    'stop_name'=> $stopName[$index],
+                    'distance'=> $distance[$index],
+                    'ETA' => $eta[$index],
+                    'stop_index'=> $index,
+                    'status'=> "Available",
+                ];
+                $index ++;
+            }
+            // Insert the new schedule and return
+            if ($scheduleModel->insertBatch($data)) {
+                return redirect()->to('/dashboard/schedules')->with('success', 'Schedule created successfully.');
+
+            } else {
+                return redirect()->back()->with('errors', 'Failed to create schedule.');
+            }
+        }   
+    }
+
+    private function idExists($id){
+        // Instantiate the model directly
+        $scheduleModel = new SchedulesModel();
+    
+        // Use the model’s query builder to check if the ID exists
+        return $scheduleModel->where('id', $id)->countAllResults() > 0;
+    }
+    
+    private function alreadyHasSchedule($start, $end, $vehicle_id)
+    {
+        $scheduleModel = new SchedulesModel();
+    
+        // Query to check for any overlapping schedules
+        $rs = $scheduleModel
+            ->where('vehicle_id', $vehicle_id)
             ->groupStart()
-                ->where('eta <=', $lastETA)
-                ->where('eta >=', $firstETA)
+                // New schedule starts before existing ends and ends after existing starts
+                ->where('eta <', $end) // New schedule starts before existing schedule ends
+                ->where('eta >', $start) // New schedule ends after existing schedule starts
             ->groupEnd()
             ->findAll();
-
-        // Handle case where there is an overlapping schedule
-        if (!empty($existingSchedule)) {
-            return redirect()->back()->with('errors', 'The vehicle has an overlapping schedule.');
-        }
     
-        //Insert
-        $data = [];
-        $index = 0;
-        $tripId = $this->generateUniqueId();
-        $eta = $this->request->getPost('eta');
-        $stops = $this->request->getPost('stop_id');
-
-        // Check if the ID already exists in the table
-        while ($this->idExists($tripId,$scheduleModel)) {
-            // If it exists, generate a new ID
-            $tripId = $this->generateUniqueId();
-        }
-
-        while($index < count($_POST['eta'])){
-
-        }
-
+        return count($rs) > 0; // If there are any results, there is an overlap
+    }
     
-        // Insert the new schedule
-        if ( $scheduleModel->insertBatch($data)) {
-          
-        } else {
-            return redirect()->back()->with('errors', 'Failed to create schedule.');
-        }
-        
-        return redirect()->to('/dashboard/schedules')->with('success', 'Schedule created successfully.');
-    }
 
-    private function idExists($id, $model)
-    {
-        // Access the table name from the passed model
-        $tableName = $model->table; // Assuming the model has a `table` property
-
-        // Check if the ID exists in the specified model's table
-        $query = $this->db->get_where($tableName, ['id' => $id]);
-        return $query->num_rows() > 0;
+    function generateUniqueID() {    
+        // Instantiate the model
+        $scheduleModel = new SchedulesModel();
+    
+        // Get the maximum trip_id value from the table
+        $maxTripId = $scheduleModel->selectMax('trip_id')->first();
+    
+        // If there are no records, use 0 as the starting point
+        $newTripId = ($maxTripId['trip_id'] ?? 0) + 1;
+    
+        return $newTripId;
     }
-
-    function generateUniqueID($length = 50) {
-        // Generate random bytes and convert to hexadecimal
-        return substr(bin2hex(random_bytes($length)), 0, $length);
-    }
+    
 }    

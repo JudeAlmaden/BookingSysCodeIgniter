@@ -190,16 +190,17 @@ $(document).ready(function() {
                 if (data.length > 0) {
                     $index = 1;
                     $.each(data, function(index, stop) {
+
+                    // Input fields are name, distance, eta
                       $('.stops-container').append(
                         `<div class="mb-3 border p-3 rounded bg-light">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="font-weight-bold">Stop ${index + 1} at <strong>${stop.distance}km </strong> from previous</span>
+                                <span class="font-weight-bold">Stop ${index + 1} at <strong>${stop.distance}km </strong> from previous (${stop.name})</span>
                                 <input type="text" class="text-muted" name="stop_id[]" placeholder="ID: ${stop.id}" value="${stop.id}" hidden>
                             </div>
                             <div class="mt-2">
-                                <span class="h5">${stop.name}</span>
-                            </div>
-                            <div class="mt-2">
+                                <input type="text" class="text-muted" name="name[]" value="${stop.name}" hidden>
+                                <input type="text" class="text-muted" name="distance[]"value="${stop.distance}" hidden>
                                 <label for="eta-${index}" class="form-label">ETA:</label>
                                 <input type="datetime-local" class="eta" name="eta[]" class="form-control" required>
                             </div>

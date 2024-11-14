@@ -24,21 +24,19 @@
     <thead>
       <tr class="bg-dark text-light">
         <th scope="">#</th>
-        <th scope="">Route Name</th>
         <th scope="">Vehicle Name</th>
-        <th scope="">Departure Time</th>
-        <th scope="">Arrival Time</th>
+        <th scope="">Initial Departure</th>
+        <th scope="">Final stop</th>
       </tr>
     </thead>
     <tbody>
-      <?php if(isset($schedule) && !empty($schedules)): ?>
+      <?php if(!empty($schedules)): ?>
           <?php foreach($schedules as $schedule): ?>
               <tr>
-                  <td class="col-1"><?= $schedule['id'] ?></td>
-                  <td class="col-1"><?= $schedule['route_name'] ?>(ID:<?= $schedule['route_id'] ?>)</td>
-                  <td class="col-1"><?= $schedule['vehicle_tag'] ?>(ID:<?= $schedule['vehicle_id'] ?>)</td>
-                  <td class="col-1"><?= $schedule['start_time'] ?></td>
-                  <td class="col-1"><?= $schedule['end_time'] ?></td>
+                  <td class="col-1"><?= $schedule['trip_id'] ?></td>
+                  <td class="col-1"><?= $schedule['tag'] ?></td>
+                  <td class="col-1"><?= $schedule['departure']?></td>
+                  <td class="col-1"><?= $schedule['arrival'] ?></td>
               </tr>
           <?php endforeach; ?>
       <?php else: ?>
@@ -48,8 +46,25 @@
       <?php endif; ?>
     </tbody>
   </table>
+  <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-end">
+          <li class="page-item <?= ($currentPage == 1) ? 'disabled' : '' ?>">
+              <a class="page-link" href="<?= site_url("dashboard/routes/" . ($currentPage - 1)) ?>" tabindex="-1" aria-disabled="true">Previous</a>
+          </li>
 
+          <?php
+          $totalPages = ceil($totalRoutes / $perPage);
+          for ($i = 1; $i <= $totalPages; $i++): ?>
+              <li class="page-item <?= ($currentPage == $i) ? 'active' : '' ?>">
+                  <a class="page-link" href="<?= site_url("dashboard/routes/$i") ?>"><?= $i ?></a>
+              </li>
+          <?php endfor; ?>
 
+          <li class="page-item <?= ($currentPage == $totalPages) ? 'disabled' : '' ?>">
+              <a class="page-link" href="<?= site_url("dashboard/routes/" . ($currentPage + 1)) ?>">Next</a>
+          </li>
+      </ul>
+  </nav>
 </div>
 
 <?php if (session()->getFlashdata('errors')): ?>

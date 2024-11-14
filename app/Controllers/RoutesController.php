@@ -89,6 +89,7 @@ class RoutesController extends BaseController
                     'string' => 'Initial location must be a string.',
                 ],
             ];
+
             //Initial Validation 
             if (!$this->validate($rules, $errors)) {
                 session()->setFlashdata('errors', $this->validator);
@@ -102,7 +103,7 @@ class RoutesController extends BaseController
             // Initialize an array to store custom validation errors
             $customErrors = [];
 
-            // Check if stations and distances are arrays
+            // Check if stations and distances are arrays with the proper count
             if (!is_array($stations) || !is_array($distances)) {
                 $customErrors[] = 'Stations and distances must be arrays.';
             } elseif (count($stations) !== count($distances)) {
@@ -120,6 +121,7 @@ class RoutesController extends BaseController
                     }
                 }
             }
+
             // If there are custom validation errors, return them
             if (!empty($customErrors)) {
                 session()->setFlashdata('errors', 'Stations and distances arrays must have the same length.');
@@ -171,17 +173,21 @@ class RoutesController extends BaseController
         session()->setFlashdata('errors', 'Incorrect Method');
         return redirect()->to('dashboard/routes');
     }
+
     public function getRoutes($name = null)
     {   
         $routesModel = new Routes();
     
         // If a name parameter is provided, filter the routes and limit results
         if ($name) {
-            $routes = $routesModel->like('name', $name)->limit(5)->findAll(); // Select up to 5 routes with names containing the search term
+            $routes = $routesModel->like('name', $name)
+                ->groupBy('name')  // Ensure unique names
+                ->limit(5)          // Limit to 5 unique names
+                ->findAll();
         } else {
             $routes = $routesModel->findAll(); // Fetch all routes if no name parameter is provided
         }
-    
+        
         // Prepare the response data
         $response = [];
         foreach ($routes as $route) {
@@ -226,7 +232,7 @@ class RoutesController extends BaseController
     
         // If a name parameter is provided, filter the routes and limit results
         if ($str) {
-            $stops = $routeStopsModel->like('name', $str)->orderBy('index', 'ASC')->findAll(); // Select up to 5 routes with names containing the search term
+            $stops = $routeStopsModel->like('name', $str)->orderBy('index', 'ASC')->groupBy('name')->findAll(); // Select up to 5 routes with names containing the search term
         } else {
             $stops = $routeStopsModel->findAll(); // Fetch all routes if no name parameter is provided
         }
