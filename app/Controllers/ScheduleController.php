@@ -158,4 +158,7 @@ class ScheduleController extends BaseController
         return $newTripId;
     }
     
+    function view($id){
+        return view ('admin/schedules/view');
+    }
 }    

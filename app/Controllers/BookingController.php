@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\SchedulesModel;
+use App\Models\PaymentsModel;
 use Exception;
 use PDOException;
 use App\Models\Bookings;
@@ -79,7 +80,8 @@ class BookingController extends BaseController
         }        
     }
 
-    public function book(){
+    public function book()
+    {
         $data = [];
     
         if ($this->request->getMethod() == 'POST') {
@@ -119,75 +121,204 @@ class BookingController extends BaseController
             if (!$this->validate($rules, $errors)) {
                 // Validation failed
                 session()->setFlashdata('errors', $this->validator->getErrors());
-                return redirect()->to(base_url('homepage')); 
-
+                return redirect()->to(base_url('homepage'));
             } else {
+                // Check if the user has 5 pending bookings
+                $bookingModel = new Bookings();
+                $userId = $_SESSION["id"];
+                
+                $pendingBookingsCount = $bookingModel
+                    ->where('user_id', $userId)
+                    ->where('status', 'Pending')
+                    ->countAllResults();
+    
+                if ($pendingBookingsCount >= 5) {
+                    session()->setFlashdata('errors', 'You already have 5 pending bookings.');
+                    return redirect()->to(base_url('homepage'));
+                }
+    
                 // Validation passed
                 $trip_id = $this->request->getPost('trip_id');
                 $to = $this->request->getPost('to');
                 $from = $this->request->getPost('from');
                 $seats = $this->request->getPost('seats');
-                
+    
                 $schedulesModel = new SchedulesModel();
-                $validationQuery =  $schedulesModel->checkSeatAvailability($from, $to, $seats, $trip_id);
-
+                $validationQuery = $schedulesModel->checkSeatAvailability($from, $to, $seats, $trip_id);
+    
                 if ($validationQuery && $validationQuery->seat_availability == 'Available') {
                     // Proceed with booking logic and create a booking request
-                    $bookingModel = new Bookings();
                     $data = [
-                        'user_id'  => $_SESSION["id"],
+                        'user_id'  => $userId,
                         'trip_id'  => $trip_id,
                         'distance' => $validationQuery->total_distance,
                         'num_seats'=> $seats,
-                        'price'    => ($validationQuery->base_fare + ($validationQuery->per_kilometer*$validationQuery->total_distance))*$seats,
+                        'price'    => ($validationQuery->base_fare + ($validationQuery->per_kilometer * $validationQuery->total_distance)) * $seats,
                         'status'   => 'Pending', 
                         'from'     => $from,
                         'to'       => $to,
                     ];
-                    
+    
                     if ($bookingModel->insert($data)) {
                         session()->setFlashdata('success', 'Booking successful!');
                         return redirect()->to(base_url('homepage'));
-
                     } else {
                         session()->setFlashdata('errors', $bookingModel->errors());
-                        return redirect()->to(base_url('homepage/book'));  
+                        return redirect()->to(base_url('homepage/book'));
                     }
                 } else {
-                    session()->setFlashdata('errors',"Looks like there isn't enough seats available");
-                    return redirect()->to(base_url('homepage'));     
+                    session()->setFlashdata('errors', "Looks like there isn't enough seats available");
+                    return redirect()->to(base_url('homepage'));
                 }
-
             }
-        }
-        else{
-            return redirect()->to(base_url('homepage')); 
+        } else {
+            return redirect()->to(base_url('homepage'));
         }
     }
- 
-    public function bookingsUser(){
-        return view('customer/bookings');
+    
+    public function bookingsUser()
+    {
+        // Load the Bookings and Payments models
+        $bookingsModel = new Bookings();
+        $paymentsModel = new PaymentsModel(); // Assuming you have created this model for the Payments table
+    
+        // Get the user ID from the session
+        $userId = session()->get('id'); // Replace 'id' with the correct session key used for user ID
+    
+        // If user is not logged in, redirect to login page
+        if (!$userId) {
+            // Set a flash message for the error
+            session()->setFlashdata('error', 'You must be logged in to access this page.');
+    
+            // Redirect to the login page
+            return redirect()->to('/login');
+        }
+    
+        // Fetch bookings for the logged-in user, joining with payments table
+        $data['bookings'] = $bookingsModel->select('bookings.*, payments.amount, payments.status as payment_status, payments.transaction_id')
+            ->join('payments', 'payments.booking_id = bookings.id', 'left') // Left join to include all bookings even without payments
+            ->where('bookings.user_id', $userId)
+            ->findAll();
+    
+        // Load the view and pass the bookings data
+        return view('customer/bookings', $data);
     }
+    
 
     public function bookingsAdmin($page = null)
     {
         $page = $page ?? 1;  // Default to page 1 if not set
         $bookingsModel = new Bookings();
+        $schedules = new SchedulesModel();
         $perPage = 20;
-        $data['bookings'] = $bookingsModel->where('status', 'pending')  // Filter by pending status
-                                            ->paginate($perPage, 'default', $page);
-
+    
+        // Join with the `users` table and fetch necessary data
+        $data['bookings'] = $bookingsModel->select('bookings.*, users.name')  // Select all bookings fields and user's name
+            ->join('users', 'users.id = bookings.user_id')  // Join condition
+            ->where('bookings.status', 'Pending')  // Filter by pending status
+            ->paginate($perPage, 'default', $page);
+    
+        // Iterate through each booking and get the current capacity for the associated trip
+        foreach ($data['bookings'] as &$booking) {
+            // Get current capacity using the trip_id from the booking
+            $capacityData = $schedules->getCurrentCapacity($booking['from'], $booking['to'], $booking['trip_id']);
+    
+            // If data is returned (i.e., capacity is available), add it to the booking data
+            if ($capacityData) {
+                // Available seats: Total seats - Reserved seats
+                $booking['current_capacity'] = $capacityData->number_seats - $capacityData->reservations;
+                $booking['total_distance'] = $capacityData->total_distance;  // Total distance for the trip
+                $booking['vehicle_capacity'] = $capacityData->number_seats; // Total seats in the vehicle
+            } else {
+                // If no capacity data is returned, handle accordingly
+                $booking['current_capacity'] = 'N/A';  // Or some other default/error value
+                $booking['total_distance'] = 'N/A';    // Or some other default/error value
+                $booking['vehicle_capacity'] = 'N/A';  // Or some other default/error value
+            }
+    
+        }
+    
+        // Pager and additional data
         $data['pager'] = $bookingsModel->pager;
-
         $data['currentPage'] = $page;
         $data['totalBookings'] = $bookingsModel->where('status', 'Pending')->countAllResults();  // Count pending bookings
         $data['perPage'] = $perPage;  
+    
         // Load the view and pass the data
         return view('admin/bookings', $data);
     }
     
+
+
+    public function approve($bookingId)
+    {
+        $bookingModel = new Bookings();
+        $schedulesModel = new SchedulesModel(); // Assuming you have a model for schedules
     
-    public function payments(){
-        return view('customer/bookings');
+        // First, check if there are enough available seats
+        $db = \Config\Database::connect();
+        $seatQuery = "
+            SELECT vehicles.number_seats
+            FROM vehicles
+            INNER JOIN schedules AS schedule_vehicle ON schedule_vehicle.vehicle_id = vehicles.id
+            INNER JOIN bookings ON bookings.trip_id = schedule_vehicle.trip_id
+            WHERE bookings.id = ?
+            GROUP BY vehicles.id
+        ";
+        
+        // Execute the query to get the vehicle's seat capacity
+        $seatResult = $db->query($seatQuery, [$bookingId])->getRow();
+    
+        // Check if the vehicle has enough seats
+        if ($seatResult) {
+            // Get the current reservations count for the trip
+            $reservationQuery = "
+                SELECT schedules.reservations
+                FROM schedules
+                INNER JOIN bookings ON bookings.trip_id = schedules.trip_id
+                WHERE bookings.id = ?
+            ";
+            $reservationResult = $db->query($reservationQuery, [$bookingId])->getRow();
+            
+            // Calculate the total reservations (existing reservations + new booking seats)
+            $totalReservations = $reservationResult->reservations + $bookingModel->find($bookingId)['num_seats'];
+    
+            // Check if the total reservations exceed the vehicle's capacity
+            if ($totalReservations <= $seatResult->number_seats) {
+                // Update the booking status to 'Approved' and add seats to the schedule
+                $bookingModel->update($bookingId, ['status' => 'Approved']);
+                $updateQuery = "
+                    UPDATE schedules
+                    JOIN bookings ON bookings.trip_id = schedules.trip_id
+                    SET schedules.reservations = schedules.reservations + bookings.num_seats
+                    WHERE bookings.id = ?
+                ";
+                $db->query($updateQuery, [$bookingId]);
+    
+                // Redirect with success message
+                return redirect()->to(base_url('dashboard/bookings/1'))->with('success', 'Booking approved successfully');
+            } else {
+                // Display an error if there are not enough seats
+                session()->setFlashdata('errors', 'Not enough seats available on the vehicle');
+                return redirect()->to(base_url('dashboard/bookings/1'));
+            }
+        } else {
+            // If there was no seat result, display an error
+            session()->setFlashdata('errors', 'Could not find the vehicle or trip details');
+            return redirect()->to(base_url('dashboard/bookings/1'));
+        }
     }
+    
+    
+    public function decline($bookingId)
+    {
+        $bookingModel = new Bookings();
+        
+        // Update the booking status to 'Declined'
+        $bookingModel->update($bookingId, ['status' => 'Declined']);
+        
+        // Redirect with success message
+        return redirect()->to(base_url('dashboard/bookings/1'))->with('success', 'Booking declined successfully');
+    }
+
 }

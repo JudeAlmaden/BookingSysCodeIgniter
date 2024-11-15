@@ -29,16 +29,22 @@
         <th scope="">Vehicle Name</th>
         <th scope="">Initial Departure</th>
         <th scope="">Final stop</th>
+        <td class="">View Full details</td>
       </tr>
     </thead>
     <tbody>
       <?php if(!empty($schedules)): ?>
           <?php foreach($schedules as $schedule): ?>
               <tr>
-                  <td class="col-1"><?= $schedule['trip_id'] ?></td>
-                  <td class="col-1"><?= $schedule['vehicle_name'] ?></td>
-                  <td class="col-1"><?= $schedule['departure']?></td>
-                  <td class="col-1"><?= $schedule['arrival'] ?></td>
+                  <td class="col-auto"><?= $schedule['trip_id'] ?></td>
+                  <td class="col-auto"><?= $schedule['vehicle_name'] ?></td>
+                  <td class="col-auto"><?= $schedule['departure']?></td>
+                  <td class="col-auto"><?= $schedule['arrival'] ?></td>
+                  <td class="col-auto">
+                    <a href="<?= base_url('dashboard/schedule/view/' . $schedule['trip_id']) ?>" class="btn btn-primary btn-sm">
+                        <i>View</i>
+                    </a>
+                  </td>
               </tr>
           <?php endforeach; ?>
       <?php else: ?>

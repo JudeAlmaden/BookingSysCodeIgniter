@@ -20,6 +20,11 @@ class Payments extends Migration
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
+            'booking_id' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+            ],
             'amount' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '10,2',  
@@ -34,6 +39,10 @@ class Payments extends Migration
                 'constraint' => '100',
                 'null'       => true,  
             ],
+            'payment_proof' => [
+                'type' => 'MEDIUMBLOB',  // or 'LONGBLOB'
+                'null' => true,
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
@@ -47,13 +56,14 @@ class Payments extends Migration
         // Primary Key and Foreign Key
         $this->forge->addKey('id', true);         
         $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
-        
+        $this->forge->addForeignKey('booking_id', 'bookings', 'id', 'CASCADE', 'CASCADE');
+
         // Create the table
         $this->forge->createTable('payments');
     }
 
     public function down()
     {
-        //
+        $this->forge->dropTable('payments');
     }
 }

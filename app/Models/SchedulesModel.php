@@ -81,7 +81,8 @@ class SchedulesModel extends Model
     public function getScheduledTripsFiltered($fromLocation, $toLocation, $type, $date, $seats) {
         try {
             $db = \Config\Database::connect();
-            
+            $currentTime = date('Y-m-d H:i:s'); // Get the current time
+    
             $query = $db->query('
                 WITH trips AS (
                     SELECT 
@@ -136,10 +137,17 @@ class SchedulesModel extends Model
                     ORDER BY t1.trip_id, t1.stop_index
                 )
                 SELECT * FROM trips 
-                WHERE capacity > occupied_seats
-                  AND departure LIKE ? 
+                WHERE 
+                    available_seats >= reservations + ?
+                    AND departure LIKE ?
+                    AND (
+                        ? LIKE "%" AND departure > ?
+                    )
                 ORDER BY departure
-            ', [$fromLocation, $toLocation, $toLocation, $fromLocation, $toLocation, $fromLocation, $toLocation, $type, $date]);
+            ', [
+                $fromLocation, $toLocation, $toLocation, $fromLocation, $toLocation, 
+                $fromLocation, $toLocation, $type, $seats, $date, $date, $currentTime
+            ]);
     
             return $query->getResultArray();
     
@@ -148,6 +156,7 @@ class SchedulesModel extends Model
             return null;
         }
     }
+    
 
     public function checkSeatAvailability($from, $to, $seats, $trip_id)
     {
@@ -194,6 +203,45 @@ class SchedulesModel extends Model
         }
     }
 
+    public function getCurrentCapacity($from, $to, $trip_id)
+    {
+        try {
+            $db = \Config\Database::connect();
+
+            // Query to fetch the current capacity and reservations
+            $query = $db->query('
+                SELECT 
+                    t1.trip_id,
+                    vehicles.number_seats,
+                    t1.reservations,
+                    (SELECT SUM(dist.distance) 
+                    FROM schedules dist 
+                    WHERE dist.trip_id = t1.trip_id 
+                    AND dist.stop_index BETWEEN (
+                        SELECT stop_index 
+                        FROM schedules 
+                        WHERE trip_id = t1.trip_id AND stop_name = ?
+                    ) + 1 
+                    AND (
+                        SELECT stop_index 
+                        FROM schedules 
+                        WHERE trip_id = t1.trip_id AND stop_name = ?
+                    )
+                    ) AS total_distance
+                FROM schedules t1
+                INNER JOIN vehicles ON t1.vehicle_id = vehicles.id
+                WHERE t1.trip_id = ?
+                GROUP BY t1.trip_id;
+            ', [$from, $to, $trip_id]);
+
+            // Fetch the row as an object or array
+            return $query->getRow();
+        } catch (Exception $e) {
+            // Handle any exceptions
+            log_message('error', $e->getMessage());
+            return null; // or handle error as appropriate
+        }
+    }
 
     public function getTripsWithDepartureArrival()
     {
@@ -221,4 +269,42 @@ class SchedulesModel extends Model
             return null;
         }
     }
+
+
+    public function cancelledReservation($bookingId)
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('schedules');
+
+    $sql = "
+        UPDATE schedules t1
+        SET t1.reservations = t1.reservations - (
+            SELECT bookings.num_seats
+            FROM bookings
+            WHERE bookings.id = ?
+        )
+        WHERE t1.trip_id IN (
+            SELECT bookings.trip_id
+            FROM bookings
+            WHERE bookings.id = ?
+        )
+        AND (
+            (SELECT t4.stop_index 
+             FROM schedules t4 
+             WHERE t4.trip_id = t1.trip_id 
+             AND t4.stop_name = (SELECT bookings.from FROM bookings WHERE bookings.id = ?)) 
+            <= 
+            (SELECT t5.stop_index 
+             FROM schedules t5 
+             WHERE t5.trip_id = t1.trip_id 
+             AND t5.stop_name = (SELECT bookings.to FROM bookings WHERE bookings.id = ?))
+        )
+    ";
+
+    // Bind the booking ID to all placeholders
+    $result = $db->query($sql, [$bookingId, $bookingId, $bookingId, $bookingId]);
+
+    return $result ? true : false;
+    }
+
 }

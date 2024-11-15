@@ -52,6 +52,12 @@
             Bookings
             </a>
         </li>
+        <li>
+            <a href="<?= base_url('dashboard/payments/1') ?>" class="nav-link text-white <?= (strpos(current_url(), site_url('dashboard/payments')) !== false) ? 'active' : '' ?>" >
+            <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
+            Payments
+            </a>
+        </li>
         </ul>
         <hr>
         <div class="dropdown">
