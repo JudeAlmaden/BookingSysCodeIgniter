@@ -196,9 +196,11 @@ class BookingController extends BaseController
     
         // Fetch bookings for the logged-in user, joining with payments table
         $data['bookings'] = $bookingsModel->select('bookings.*, payments.amount, payments.status as payment_status, payments.transaction_id')
-            ->join('payments', 'payments.booking_id = bookings.id', 'left') // Left join to include all bookings even without payments
-            ->where('bookings.user_id', $userId)
-            ->findAll();
+        ->join('payments', 'payments.booking_id = bookings.id', 'left') // Left join to include all bookings even without payments
+        ->where('bookings.user_id', $userId)
+        ->orderBy("bookings.status = 'Approved' DESC")  // "Approved" bookings first
+        ->orderBy('bookings.created_at', 'DESC')  // Order by created_at in descending order (latest bookings first)
+        ->findAll();
     
         // Load the view and pass the bookings data
         return view('customer/bookings', $data);
@@ -218,6 +220,14 @@ class BookingController extends BaseController
             ->where('bookings.status', 'Pending')  // Filter by pending status
             ->paginate($perPage, 'default', $page);
     
+            // Join with the users table and fetch necessary data
+            // $data['bookings'] = $bookingsModel->select('bookings.*, users.name')  // Select all bookings fields and user's name
+            // ->join('users', 'users.id = bookings.user_id')  // Join condition
+            // ->orderBy('CASE WHEN bookings.status = "Pending" THEN 1 ELSE 2 END', 'ASC')  // Prioritize pending bookings
+            // ->orderBy('bookings.created_at', 'DESC')  // Further order by creation date (optional)
+            // ->paginate($perPage, 'default', $page);
+
+
         // Iterate through each booking and get the current capacity for the associated trip
         foreach ($data['bookings'] as &$booking) {
             // Get current capacity using the trip_id from the booking
@@ -287,13 +297,7 @@ class BookingController extends BaseController
             if ($totalReservations <= $seatResult->number_seats) {
                 // Update the booking status to 'Approved' and add seats to the schedule
                 $bookingModel->update($bookingId, ['status' => 'Approved']);
-                $updateQuery = "
-                    UPDATE schedules
-                    JOIN bookings ON bookings.trip_id = schedules.trip_id
-                    SET schedules.reservations = schedules.reservations + bookings.num_seats
-                    WHERE bookings.id = ?
-                ";
-                $db->query($updateQuery, [$bookingId]);
+                $schedulesModel->approveReservation($bookingId);
     
                 // Redirect with success message
                 return redirect()->to(base_url('dashboard/bookings/1'))->with('success', 'Booking approved successfully');

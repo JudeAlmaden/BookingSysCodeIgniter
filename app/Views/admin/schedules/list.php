@@ -6,7 +6,7 @@
 <div class="container">
   <div class="row align-items-center">
     <div class="col">
-      <h1>Routes</h1>
+      <h1>Schedules</h1>
     </div>
     <div class="col d-flex justify-content-end">
     <form method="GET" action="<?= site_url('dashboard/schedules/create/') ?>">
@@ -18,7 +18,6 @@
   </div>
 </div>
 
-
 <hr>
 
 <div class="container-fluid border border-light border-1 shadow-sm rounded-3 p-5 m-0 ">
@@ -29,22 +28,46 @@
         <th scope="">Vehicle Name</th>
         <th scope="">Initial Departure</th>
         <th scope="">Final stop</th>
-        <td class="">View Full details</td>
+        <th scope="">Status</th>
+        <td class="">Actions</td>
       </tr>
     </thead>
     <tbody>
       <?php if(!empty($schedules)): ?>
           <?php foreach($schedules as $schedule): ?>
               <tr>
-                  <td class="col-auto"><?= $schedule['trip_id'] ?></td>
-                  <td class="col-auto"><?= $schedule['vehicle_name'] ?></td>
-                  <td class="col-auto"><?= $schedule['departure']?></td>
-                  <td class="col-auto"><?= $schedule['arrival'] ?></td>
-                  <td class="col-auto">
+                <td class="col-auto"><?= $schedule['trip_id'] ?></td>
+                <td class="col-auto"><?= $schedule['vehicle_name'] ?></td>
+                <td class="col-auto">
+                    <?= (new DateTime($schedule['departure']))->format('F j, Y h:i A') ?>
+                </td>
+                <td class="col-auto">
+                    <?= (new DateTime($schedule['arrival']))->format('F j, Y h:i A') ?>
+                </td>
+                <td class="col-auto">
+                    <?=$schedule['trip_status']?>
+                </td>
+                <td class="col-auto">
                     <a href="<?= base_url('dashboard/schedule/view/' . $schedule['trip_id']) ?>" class="btn btn-primary btn-sm">
                         <i>View</i>
                     </a>
-                  </td>
+                
+                    <!-- Check if the status is "Not Available" and disable buttons -->
+                    <?php if ($schedule['trip_status'] == 'Available'): ?>
+                        <a href="<?= base_url('/dashboard/schedules/complete/' . $schedule['trip_id']) ?>" class="btn btn-success btn-sm">
+                            Mark as Completed
+                        </a>
+
+                        <a href="<?= base_url('/dashboard/schedules/cancel/' . $schedule['trip_id']) ?>" class="btn btn-danger btn-sm">
+                            Cancel
+                        </a>
+                    <?php else: ?>
+                        <!-- Disabled Mark as Completed and Cancel buttons -->
+                        <button class="btn btn-success btn-sm" disabled>Mark as Completed</button>
+                        <button class="btn btn-danger btn-sm" disabled>Cancel</button>
+                    <?php endif; ?>
+                </td>
+
               </tr>
           <?php endforeach; ?>
       <?php else: ?>
@@ -112,99 +135,4 @@
 <?php endif; ?>
 
 
-<script>
-
-  
-  let post = 1;
-  let letter = 'A';
-
-  document.getElementById('add-new-stop').addEventListener('click', function() {
-    // Create the new div element
-    const newStop = document.createElement('div');
-    newStop.className = 'stop-container border border-light border-1 shadow-sm rounded-3 p-3';
-
-    newStop.innerHTML = `
-        <div class="row">
-            <div class="col-12 row">
-                <div class="w-100 d-flex justify-content-between align-items-center mb-3">
-                    <label class="form-label"><b>Terminal/Stop</b></label>
-                    <button type="button" class="btn-close" aria-label="Close" onclick="deleteStop(this)"></button>
-                </div>
-                <div class="col-8">
-                    <input type="text" class="form-control border-top-0 border-start-0 border-end-0 m-0 p-0" placeholder=" Point ${post}" name="stations[]" required>
-                </div>
-                <div class="col-4">
-                    <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="Distance From Previous Point">
-                        <input type="number" class="form-control border-top-0 border-start-0 border-end-0 m-0 p-0 tooltiptext"  placeholder="Kilometers" name="distance[]" required>
-                    </span>
-                </div>
-            </div>
-        </div>
-    `;
-
-    const ellipse = document.createElement('div');
-    ellipse.className = 'fs-2 text-center ellipse';
-    ellipse.innerHTML = '&#8942;'
-    // Add the inner HTML structure
-
-    document.getElementById('points-container').insertBefore(newStop,  document.getElementById('route-final'));
-    document.getElementById('points-container').insertBefore(ellipse,  document.getElementById('route-final'));
-
-    post++;
-
-    setPlaceholders();
-});
-
-
-function deleteStop(button) {
-
-    //Items to delete
-    const container = button.closest('.stop-container'); 
-    const ellpise = container.nextElementSibling;
-
-    if (container) {
-      container.remove();
-    }
-
-    ellpise.remove();
-    post--;    
-
-    setPlaceholders();
-}
-
-function setPlaceholders(){
-      //Fix the placeholders
-    let all =  document.getElementById('points-container')
-    let containers = all.querySelectorAll(':scope > div')
-    let index= 0;
-
-    containers.forEach((container) => {
-    // Get the first input field within all child elements of the current sibling
-    const firstInput = container.querySelector('input');
-    const label = getLabel(index);
-
-    if (firstInput) {
-        // Change its placeholder to "Point {index}"
-        firstInput.placeholder = `Point ${label}`;
-        index++;
-    }
-});
-}
-
-
-function getLabel(index) {
-    let label = '';
-    let num = index;
-
-    while (num >= 0) {
-        // Calculate the letter and update the label
-        label = String.fromCharCode((num % 26) + 65) + label;
-        num = Math.floor(num / 26) - 1; // Move to the next "digit" in base-26
-    }
-    
-    return label;
-}
-
-
-</script>
 <?= $this->endSection()?>

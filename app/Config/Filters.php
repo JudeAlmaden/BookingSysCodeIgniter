@@ -13,6 +13,7 @@ use CodeIgniter\Filters\PageCache;
 use CodeIgniter\Filters\PerformanceMetrics;
 use CodeIgniter\Filters\SecureHeaders;
 use App\Filters\Auth;
+use App\Filters\isAdmin;
 use App\Filters\Noauth;
 
 class Filters extends BaseFilters
@@ -38,6 +39,7 @@ class Filters extends BaseFilters
         'performance'   => PerformanceMetrics::class,
         "auth"          => Auth::class, 
         "noauth" => Noauth::class,
+        "isAdmin"=>isAdmin::class
 
     ];
 

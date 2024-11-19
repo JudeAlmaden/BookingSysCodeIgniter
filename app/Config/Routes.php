@@ -12,30 +12,37 @@ $routes->match(['get', 'post'], '/login', 'User::login', ['filter' => 'noauth'])
 $routes->match(['get', 'post'], '/', 'User::login', ['filter' => 'noauth']);                 // Root route (redirects to login)
 
 // --- Admin Dashboard Routes ---
-$routes->get('/dashboard', 'AdminController::index', ['filter' => 'noauth']); // Dashboard home
-$routes->get('dashboard/bookings/(:num)', 'BookingController::bookingsAdmin/$1', ['filter' => 'noauth']); // View bookings (paginated)
-$routes->match(['get', 'post'],'dashboard/vehicles/(:num)', 'VehiclesController::index/$1', ['filter' => 'noauth']); // Vehicles management (paginated), handles adding of vehicle
-$routes->match(['get', 'post'], 'dashboard/routes/(:num)', 'RoutesController::index/$1', ['filter' => 'noauth']); // Routes management (paginated), handles adding of route
-$routes->get('dashboard/schedules/(:num)', 'ScheduleController::index/$1', ['filter' => 'noauth']); // Paginated schedules
+$routes->get('/dashboard', 'AdminController::index', ['filter' => 'isAdmin']); // Dashboard home
+$routes->get('dashboard/bookings/(:num)', 'BookingController::bookingsAdmin/$1', ['filter' => 'isAdmin']); // View bookings (paginated)
+$routes->match(['get', 'post'],'dashboard/vehicles/(:num)', 'VehiclesController::index/$1', ['filter' => 'isAdmin']); // Vehicles management (paginated), handles adding of vehicle
+$routes->match(['get', 'post'], 'dashboard/routes/(:num)', 'RoutesController::index/$1', ['filter' => 'isAdmin']); // Routes management (paginated), handles adding of route
+$routes->get('dashboard/schedules/(:num)', 'ScheduleController::index/$1', ['filter' => 'isAdmin']); // Paginated schedules
 $routes->get('dashboard/payments/(:num)', 'PaymentController::index/$1');
+$routes->get('dashboard/refunds/(:num)', 'PaymentController::refund/$1', ['filter' => 'isAdmin']);
+
 
 // Route Manipulation
-$routes->match(['get', 'post'], 'dashboard/routes/view/(:num)', 'RoutesController::viewRoute/$1', ['filter' => 'noauth']); // View route details
-$routes->post('dashboard/routes/delete/(:num)', 'RoutesController::deleteRoute/$1', ['filter' => 'noauth']);           // Delete route
+$routes->match(['get', 'post'], 'dashboard/routes/view/(:num)', 'RoutesController::viewRoute/$1', ['filter' => 'isAdmin']); // View route details
+$routes->post('dashboard/routes/delete/(:num)', 'RoutesController::deleteRoute/$1', ['filter' => 'isAdmin']);           // Delete route
 
-// Schedule Creation
-$routes->match(['get', 'post'], 'dashboard/schedules/create', 'ScheduleController::create', ['filter' => 'noauth']); // Create new schedule
-$routes->get('dashboard/schedule/view/(:num)', 'ScheduleController::view/$1', ['filter' => 'noauth']); //View
+// Schedule Crud
+$routes->match(['get', 'post'], 'dashboard/schedules/create', 'ScheduleController::create', ['filter' => 'isAdmin']); // Create new schedule
+$routes->get('dashboard/schedule/view/(:num)', 'ScheduleController::view/$1', ['filter' => 'isAdmin']); //View
+$routes->get('dashboard/schedules/reservations/(:num)', 'ScheduleController::viewReservations/$1', ['filter' => 'isAdmin']); //View
+$routes->get('dashboard/schedules/cancel/(:num)', 'ScheduleController::compleTrip/$1', ['filter' => 'isAdmin']); // Get vehicles by type
+$routes->get('dashboard/schedules/complete/(:num)', 'ScheduleController::cancelTrip/$1', ['filter' => 'isAdmin']); // Get vehicles by type
 
 //Payments
-$routes->get('dashboard/payment/view/(:num)', 'PaymentController::viewPaymentAdmin/$1', ['filter' => 'auth']);
-$routes->post('payment/approve/(:num)', 'PaymentController::approve/$1');
-$routes->post('payment/reject/(:num)', 'PaymentController::reject/$1');
+$routes->get('dashboard/payment/view/(:num)', 'PaymentController::viewPaymentAdmin/$1', ['filter' => 'isAdmin']);
+$routes->post('payment/approve/(:num)', 'PaymentController::approve/$1', ['filter' => 'isAdmin']);
+$routes->post('payment/reject/(:num)', 'PaymentController::reject/$1', ['filter' => 'isAdmin']);
 
 //Bookings
-$routes->get('dashboard/bookings/approve/(:num)', 'BookingController::approve/$1');
-$routes->get('dashboard/bookings/decline/(:num)', 'BookingController::decline/$1');
+$routes->get('dashboard/bookings/approve/(:num)', 'BookingController::approve/$1', ['filter' => 'isAdmin']);
+$routes->get('dashboard/bookings/decline/(:num)', 'BookingController::decline/$1', ['filter' => 'isAdmin']);
 
+//refund
+$routes->post('refund/complete/(:num)', 'PaymentController::completeRefund/$1', ['filter' => 'isAdmin']);
 
 // --- API Routes ---
 $routes->get('routes/get/(:any)', 'RoutesController::getRoutes/$1', ['filter' => 'noauth']); // Fetch route data by ID
@@ -57,3 +64,4 @@ $routes->get('payment/view/(:num)', 'PaymentController::viewPayment/$1', ['filte
 $routes->get('payment/downloadProof/(:num)', 'PaymentController::downloadProof/$1');
 
 $routes->post('homepage/book', 'BookingController::book', ['filter' => 'auth']); // Post booking request
+

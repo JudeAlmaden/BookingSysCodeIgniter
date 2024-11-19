@@ -38,8 +38,12 @@ class User extends BaseController
 
                 // Storing session values
                 $this->setUserSession($user);
-                // Redirecting to dashboard after login
-                return redirect()->to(base_url('homepage'));
+
+                if($user['privilege']=="Admin"){
+                    return redirect()->to(base_url('dashboard'));
+                }else{
+                    return redirect()->to(base_url('homepage'));
+                }
             }
         }else{
             return view('login');
@@ -53,6 +57,7 @@ class User extends BaseController
             'phone_no' => $user['phone_no'],
             'email' => $user['email'],
             'isLoggedIn' => true,
+            'privilege'=>$user['privilege'],
         ];
 
         session()->set($data);
@@ -80,14 +85,28 @@ class User extends BaseController
             } else {
                 $model = new UserModel();
 
+                // Count the total number of records in the table
+                $totalRecords = $model->countAll();
+                
+                // Prepare the base data
                 $newData = [
                     'name' => $this->request->getVar('name'),
                     'phone_no' => $this->request->getVar('phone_no'),
                     'email' => $this->request->getVar('email'),
                     'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
                 ];
-
+                
+                // Add privilege if there are existing records
+                if ($totalRecords == 0) {
+                    $newData['privilege'] = "Admin";
+                }else{
+                    $newData['privilege'] = "User";
+                }
+                
+                // Save the data
                 $model->save($newData);
+                
+                // Set success message and redirect
                 $session = session();
                 $session->setFlashdata('success', 'Successful Registration');
                 return redirect()->to(base_url(''));

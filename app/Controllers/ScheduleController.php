@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\SchedulesModel;
+use App\Models\Bookings;
 
 class ScheduleController extends BaseController
 {
@@ -134,13 +135,14 @@ class ScheduleController extends BaseController
     
         // Query to check for any overlapping schedules
         $rs = $scheduleModel
-            ->where('vehicle_id', $vehicle_id)
-            ->groupStart()
-                // New schedule starts before existing ends and ends after existing starts
-                ->where('eta <', $end) // New schedule starts before existing schedule ends
-                ->where('eta >', $start) // New schedule ends after existing schedule starts
-            ->groupEnd()
-            ->findAll();
+        ->where('vehicle_id', $vehicle_id)
+        ->where('status', 'Available') // Corrected typo in 'available'
+        ->groupStart()
+            // New schedule starts before existing ends and ends after existing starts
+            ->where('eta <', $end) // New schedule starts before existing schedule ends
+            ->where('eta >', $start) // New schedule ends after existing schedule starts
+        ->groupEnd()
+        ->findAll();
     
         return count($rs) > 0; // If there are any results, there is an overlap
     }
@@ -158,7 +160,89 @@ class ScheduleController extends BaseController
         return $newTripId;
     }
     
-    function view($id){
-        return view ('admin/schedules/view');
+    public function view($id)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('schedules');
+    
+        // Query schedules and join with vehicles table
+        $builder->select('schedules.*, vehicles.tag, vehicles.type, vehicles.number_seats')
+                ->join('vehicles', 'vehicles.id = schedules.vehicle_id') // Join condition
+                ->where('schedules.trip_id', $id); // Filter by trip_id
+    
+        $schedules = $builder->get()->getResultArray();
+    
+        // Extract vehicle data from the first schedule row (assuming all rows share the same vehicle_id)
+        $vehicle = [
+            'tag' => $schedules[0]['tag'] ?? null,
+            'type' => $schedules[0]['type'] ?? null,
+            'number_seats' => $schedules[0]['number_seats'] ?? null,
+        ];
+    
+        // Pass both schedules and vehicle data to the view
+        return view('admin/schedules/view', ['schedules' => $schedules, 'vehicle' => $vehicle, 'id'=>$id ]);
+    }
+    
+    public function viewReservations($id)
+    {
+        $scheduleModel = new SchedulesModel();
+    
+        $passengers = $scheduleModel->getPassengersFromStop($id);
+    
+        // Get the stop name(s) from the schedules table based on the schedule ID
+        $stop = $scheduleModel->where('id', $id)->first();  // Assuming this method returns stop names for a specific schedule
+        
+        // Check if passengers data is null or empty
+        if ($passengers === null || empty($passengers)) {
+            // Set a flash error message if no passengers are found
+            session()->setFlashdata('error', 'No passengers found for this schedule.');
+        }
+    
+        return view('admin/schedules/reservationsView', [
+            'passengers' => $passengers,
+            'stop' => $stop  
+        ]);
+    }
+    
+    public function cancelTrip($id)
+    {
+        // Load the SchedulesModel and Bookings model
+        $scheduleModel = new SchedulesModel();
+        $bookingsModel = new Bookings();
+        
+        // Prepare the update data for schedules
+        $updateData = [
+            'status' => 'Cancelled',  // Assuming 'status' column exists in the schedules table
+        ];
+        
+        // Update the schedules where trip_id matches the given $id
+        if ($scheduleModel->where('trip_id', $id)->set($updateData)->update() && $bookingsModel->updateCancelledTrip($id)) {
+            // Redirect to the view schedule page with success message
+            return redirect()->back()->with('success', 'The trip has been successfully cancelled.');
+        } else {
+            // Redirect back with error message if the operation fails
+            return redirect()->back()->with('error', 'Failed to cancel the trip. Please try again.');
+        }
+    }
+
+    public function completeTrip($id)
+    {
+        // Load the SchedulesModel and Bookings model
+        $scheduleModel = new SchedulesModel();
+        $bookingsModel = new Bookings();
+        
+        // Prepare the update data for schedules
+        $updateData = [
+            'status' => 'Completed',  // Assuming 'status' column exists in the schedules table
+        ];
+        
+        // Update the schedules where trip_id matches the given $id
+        if ($scheduleModel->where('trip_id', $id)->set($updateData)->update()) {
+            // Redirect to the view schedule page with success message
+            return redirect()->back()->with('success', 'The trip has been successfully cancelled.');
+        } else {
+            // Redirect back with error message if the operation fails
+            return redirect()->back()->with('error', 'Failed to cancel the trip. Please try again.');
+        }
     }
 }    

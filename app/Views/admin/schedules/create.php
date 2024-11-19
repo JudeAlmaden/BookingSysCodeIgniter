@@ -2,6 +2,10 @@
 
 <?= $this->section("body") ?>
 
+<a href="javascript:void(0);" onclick="window.history.back();" class="btn btn-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Back
+</a>
+
 <style>
   #suggestions-vehicles,
   #suggestions-route {

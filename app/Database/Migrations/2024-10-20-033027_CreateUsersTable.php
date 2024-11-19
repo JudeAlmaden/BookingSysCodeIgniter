@@ -31,7 +31,7 @@ class CreateUsersTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
             ],
-            'priviledge'    => [
+            'privilege'    => [
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
                 'default'    => 'user',

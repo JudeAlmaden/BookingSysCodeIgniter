@@ -2,6 +2,10 @@
 
 <?= $this->section('body') ?>
 
+<a href="javascript:void(0);" onclick="window.history.back();" class="btn btn-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Back
+</a>
+
 <div class="container mt-4">
     <h2 class="mb-4">Payment Confirmation</h2>
 
@@ -53,11 +57,7 @@
                         <tr>
                             <td><strong>Status:</strong></td>
                             <td>
-                                <?php if ($booking['status'] === 'Approved'): ?>
-                                    <span class="badge bg-success">Approved</span>
-                                <?php else: ?>
-                                    <span class="badge bg-warning">Pending</span>
-                                <?php endif; ?>
+                                <?php echo($booking['status']) ?>
                             </td>
                         </tr>
                     </table>
@@ -78,13 +78,7 @@
                         <tr>
                             <td><strong>Status:</strong></td>
                             <td>
-                                <?php if ($payment && $payment['status'] === 'Approved'): ?>
-                                    <span class="badge bg-primary">Payment Approved</span>
-                                <?php elseif ($payment && $payment['status'] === 'Pending'): ?>
-                                    <span class="badge bg-warning">Waiting for Confirmation</span>
-                                <?php else: ?>
-                                    <span class="badge bg-danger">Payment Pending</span>
-                                <?php endif; ?>
+                                <?php echo isset($payment['status']) ? $payment['status'] : 'No Payment Yet'; ?>
                             </td>
                         </tr>
                     </table>
@@ -132,6 +126,14 @@
                                 <form action="<?= base_url('payment/reject/' . $payment['id']) ?>" method="POST" class="d-inline">
                                     <button type="submit" class="btn btn-danger">
                                         <i class="fas fa-times"></i> Deny Payment
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+
+                            <?php if ($payment['status'] === 'Waiting for refund'): ?>
+                                <form action="<?= base_url('refund/complete/' . $payment['id']) ?>" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-check"></i> Complete Refund
                                     </button>
                                 </form>
                             <?php endif; ?>

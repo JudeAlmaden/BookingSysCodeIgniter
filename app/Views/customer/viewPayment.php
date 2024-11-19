@@ -53,13 +53,7 @@
                         <tr>
                             <td><strong>Status:</strong></td>
                             <td>
-                                <?php if ($booking['status'] === 'Pending' ): ?>
-                                    <span class="badge bg-warning text-dark col-12">Pending</span>
-                                <?php elseif (($booking['status'] === 'Approved') OR  ($booking['status'] === 'Confirmed')): ?>
-                                    <span class="badge bg-success col-12">Approved</span>
-                                <?php else: ?>
-                                    <span class="badge bg-danger col-12">Cancelled</span>
-                                <?php endif; ?>
+                                <?php echo($booking['status']) ?>
                             </td>
                         </tr>
                     </table>
@@ -80,17 +74,7 @@
                         <tr>
                             <td><strong>Status:</strong></td>
                             <td>
-                                <?php if ($payment && $payment['status'] === 'Approved'): ?>
-                                    <span class="badge bg-primary col-12">Payment Approved</span>
-                                <?php elseif ($payment && $payment['status'] === 'Pending'): ?>
-                                    <span class="badge bg-warning col-12">Waiting for Confirmation</span>
-                                <?php elseif ($payment && $payment['status'] === 'Confirmed'): ?>
-                                    <span class="badge bg-success col-12">Your booking has been confirmed</span>
-                                <?php elseif (($payment && $payment['status'] === 'Confirmed')): ?>
-                                    <span class="badge bg-success col-12">Your booking has been confirmed</span>
-                                <?php else: ?>
-                                    <span class="badge bg-danger col-12">Payment Pending</span>
-                                <?php endif; ?>
+                                <?php echo isset($payment['status']) ? $payment['status'] : 'No payment yet'; ?>
                             </td>
                         </tr>
                     </table>
@@ -102,7 +86,7 @@
                     <?php elseif ($payment && $payment['status'] === 'Approved'): ?>
                         <div class="alert alert-success">Your payment has been confirmed.</div>
                     <?php elseif (($payment && $payment['status'] === 'Confirmed') && ($booking['status'] === 'Cancelled')): ?>
-                        <span class="badge bg-danger col-12">Schedule trip has been cancelled. Show this to claim a refund from the nearest terminal.</span>
+                        <span class="badge bg-danger col-12">Schedule trip has been cancelled. Show this or wait for a refund from the nearest terminal.</span>
                     <?php endif; ?>
                 </div>
             </div>

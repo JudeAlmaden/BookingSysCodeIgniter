@@ -49,7 +49,7 @@
 <div class="container">
   <div class="row align-items-center">
     <div class="col">
-      <h1>Routes</h1>
+      <h1>Vehicles</h1>
     </div>
     <div class="col d-flex justify-content-end">
       <button type="button" class="btn btn-primary btn-lg p-3" data-bs-toggle="modal" data-bs-target="#create">
@@ -73,7 +73,6 @@
         <th >Number of Seats</th>
         <th >Base Fare</th>
         <th >Per kilimeter</th>
-        <th >Controls</th>
       </tr>
     </thead>
     <tbody>
@@ -87,7 +86,6 @@
                   <td ><?= $vehicle['number_seats'] ?></td>
                   <td ><?= $vehicle['base_fare'] ?></td>
                   <td ><?= $vehicle['per_kilometer'] ?></td>
-                  <td >Edit</td>
               </tr>
           <?php endforeach; ?>
       <?php else: ?>

@@ -248,7 +248,7 @@ class PaymentController extends BaseController
         $bookingModel->update($payment['booking_id'], ['status' => 'Confirmed']);
         
         session()->setFlashdata('success', 'Payment has been approved.');
-        return redirect()->to(base_url('/dashboard'));
+        return redirect()->to(base_url('/dashboard/payments/1'));
     }
 
     public function reject($paymentId)
@@ -280,8 +280,54 @@ class PaymentController extends BaseController
             session()->setFlashdata('error', 'Payment denied, but failed to adjust reservations.');
         }
     
-        return redirect()->to(base_url('/dashboard'));
+        return redirect()->to(base_url('/dashboard/payments/1'));
     }
     
 
+
+    
+    public function refund($page = null)
+    {
+        $page = $page ?? 1;  // Default to page 1 if not set
+        $paymentsModel = new PaymentsModel(); // Model for payments
+        $perPage = 20;
+    
+        // Fetch payments with booking details, focusing only on payments
+        $payments = $paymentsModel->select('payments.*, bookings.id as booking_id, bookings.status as booking_status')
+            ->join('bookings', 'bookings.id = payments.booking_id', 'left')  // Left join to include payments even if no related booking
+            ->where('payments.status', 'Waiting for Refund')  // Filter by pending payment status
+            ->paginate($perPage, 'default', $page);  // Paginate results
+    
+        // Additional data for pagination
+        $data['payments'] = $payments;  // Store the fetched payments
+        $data['pager'] = $paymentsModel->pager;  // Paginate links using the payments model
+        $data['currentPage'] = $page;
+        $data['totalPayments'] = $paymentsModel->where('status', 'Pending')->countAllResults(); // Count pending payments
+        $data['perPage'] = $perPage;
+    
+        // Return the view with the data
+        return view('admin/refunds', $data);
+    }
+
+
+    public function completeRefund($paymentId)
+    {
+        $paymentModel = new PaymentsModel();
+        $payment = $paymentModel->find($paymentId);
+    
+        if (!$payment) {
+            session()->setFlashdata('error', 'Payment not found.');
+            return redirect()->to(base_url('/dashboard'));
+        }
+    
+        // Handle the result of the cancellation
+        if ( $paymentModel->update($paymentId, ['status' => 'Completed'])) {
+            session()->setFlashdata('success', 'Payment has been marked as completed and the reservation has been updated.');
+        } else {
+            session()->setFlashdata('error', 'Payment completed, but failed to update the reservation.');
+        }
+    
+        return redirect()->to(base_url('/dashboard/payments/1'));
+    }
+    
 }

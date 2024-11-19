@@ -58,6 +58,12 @@
             Payments
             </a>
         </li>
+        <li>
+            <a href="<?= base_url('dashboard/refunds/1') ?>" class="nav-link text-white <?= (strpos(current_url(), site_url('dashboard/refunds')) !== false) ? 'active' : '' ?>" >
+            <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
+            Refunds
+            </a>
+        </li>
         </ul>
         <hr>
         <div class="dropdown">
