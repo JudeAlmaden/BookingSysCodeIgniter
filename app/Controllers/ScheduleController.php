@@ -166,7 +166,8 @@ class ScheduleController extends BaseController
         $builder = $db->table('schedules');
     
         // Query schedules and join with vehicles table
-        $builder->select('schedules.*, vehicles.tag, vehicles.type, vehicles.number_seats')
+        $builder->select('schedules.reservations,schedules.id, schedules.ETA, schedules.stop_index,
+        schedules.status,schedules.stop_name,schedules.distance, vehicles.tag, vehicles.type, vehicles.number_seats')
                 ->join('vehicles', 'vehicles.id = schedules.vehicle_id') // Join condition
                 ->where('schedules.trip_id', $id); // Filter by trip_id
     

@@ -343,8 +343,8 @@ class SchedulesModel extends Model
         SELECT t5.stop_index 
         FROM schedules t5 
         WHERE t5.trip_id = t1.trip_id 
-        AND t5.stop_name = (SELECT bookings.to FROM bookings WHERE bookings.id = ?)-1
-    )
+        AND t5.stop_name = (SELECT bookings.to FROM bookings WHERE bookings.id = ?)
+    )-1
     ";
 
 
@@ -353,7 +353,6 @@ class SchedulesModel extends Model
 
     return $result ? true : false;
     }
-
 
     public function getPassengersFromStop($id)
     {
@@ -395,7 +394,7 @@ class SchedulesModel extends Model
                 LEFT JOIN `payments` ON b1.id = payments.booking_id
                 LEFT JOIN users ON b1.user_id = users.id
                 WHERE schedules.id = ?
-                  AND b1.status = "Approved"
+                  AND b1.status = "Confirmed"
                   AND schedules.stop_index BETWEEN (
                       SELECT t4.stop_index 
                       FROM `schedules` t4 

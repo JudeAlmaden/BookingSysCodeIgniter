@@ -10,14 +10,43 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+   <style>
+      #title{
+            background: linear-gradient(to right, #12c2e9, #c471ed, #f64f59);
+            background-clip: text;
+            color:transparent
+        }
    
+        /* Custom scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+        ::-webkit-scrollbar {
+            width: 10px;  /* Width of the scrollbar */
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #e0e0e0;  /* Track color */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #555;  /* Scrollbar thumb color */
+            border: none;  /* No border for thumb */
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #333;  /* Scrollbar thumb color on hover */
+        }
+
+        /* Custom scrollbar for Firefox */
+        html {
+            scrollbar-width: thin;  /* Thin scrollbar */
+            scrollbar-color: #555 #e0e0e0;  /* Thumb color and track color */
+        }
+   </style>
 </head>
 <body style="height:100vh">
     <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark h-100 position-fixed" style="width: 280px;">
         <a href="/dashboard" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-        <span class="fs-4">Seat Booking System</span>
-        </a>
+        <a class="navbar-brand " id="title">Seat Booking System</a>
+        </>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">           
         <li class="nav-item">
