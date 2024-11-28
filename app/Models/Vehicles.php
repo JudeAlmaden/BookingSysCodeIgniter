@@ -12,7 +12,7 @@ class Vehicles extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['tag','type','description','number_seats','base_fare','per_kilometer'];
+    protected $allowedFields    = ['tag','type','description','number_seats','base_fare','per_kilometer','status'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

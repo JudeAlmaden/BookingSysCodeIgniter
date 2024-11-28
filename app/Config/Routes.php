@@ -14,12 +14,17 @@ $routes->match(['get', 'post'], '/', 'User::login', ['filter' => 'noauth']);    
 // --- Admin Dashboard Routes ---
 $routes->get('/dashboard', 'AdminController::index', ['filter' => 'isAdmin']); // Dashboard home
 $routes->get('dashboard/bookings/(:num)', 'BookingController::bookingsAdmin/$1', ['filter' => 'isAdmin']); // View bookings (paginated)
-$routes->match(['get', 'post'],'dashboard/vehicles/(:num)', 'VehiclesController::index/$1', ['filter' => 'isAdmin']); // Vehicles management (paginated), handles adding of vehicle
-$routes->match(['get', 'post'], 'dashboard/routes/(:num)', 'RoutesController::index/$1', ['filter' => 'isAdmin']); // Routes management (paginated), handles adding of route
+$routes->get('dashboard/vehicles/(:num)', 'VehiclesController::index/$1', ['filter' => 'isAdmin']); // Vehicles management (paginated), handles adding of vehicle
+$routes->post('dashboard/vehicles/', 'VehiclesController::index', ['filter' => 'isAdmin']); 
+$routes->match(['get', 'post'], 'dashboard/routes/(:num)', 'RoutesController::index/$1', ['filter' => 'isAdmin']);
+$routes->post( 'dashboard/routes/', 'RoutesController::index', ['filter' => 'isAdmin']); // Routes management (paginated), handles adding of route
 $routes->get('dashboard/schedules/(:num)', 'ScheduleController::index/$1', ['filter' => 'isAdmin']); // Paginated schedules
 $routes->get('dashboard/payments/(:num)', 'PaymentController::index/$1');
 $routes->get('dashboard/refunds/(:num)', 'PaymentController::refund/$1', ['filter' => 'isAdmin']);
 
+
+// Toggling vehicle
+$routes->get('dashboard/vehicles/toggle/(:num)', 'VehiclesController::toggleVehicle/$1', ['filter' => 'isAdmin']); // Get vehicles by type
 
 // Route Manipulation
 $routes->match(['get', 'post'], 'dashboard/routes/view/(:num)', 'RoutesController::viewRoute/$1', ['filter' => 'isAdmin']); // View route details
@@ -29,8 +34,8 @@ $routes->post('dashboard/routes/delete/(:num)', 'RoutesController::deleteRoute/$
 $routes->match(['get', 'post'], 'dashboard/schedules/create', 'ScheduleController::create', ['filter' => 'isAdmin']); // Create new schedule
 $routes->get('dashboard/schedule/view/(:num)', 'ScheduleController::view/$1', ['filter' => 'isAdmin']); //View
 $routes->get('dashboard/schedules/reservations/(:num)', 'ScheduleController::viewReservations/$1', ['filter' => 'isAdmin']); //View
-$routes->get('dashboard/schedules/cancel/(:num)', 'ScheduleController::compleTrip/$1', ['filter' => 'isAdmin']); // Get vehicles by type
-$routes->get('dashboard/schedules/complete/(:num)', 'ScheduleController::cancelTrip/$1', ['filter' => 'isAdmin']); // Get vehicles by type
+$routes->get('dashboard/schedules/cancel/(:num)', 'ScheduleController::cancelTrip/$1', ['filter' => 'isAdmin']); // Get vehicles by type
+$routes->get('dashboard/schedules/complete/(:num)', 'ScheduleController::completeTrip/$1', ['filter' => 'isAdmin']); // Get vehicles by type
 
 //Payments
 $routes->get('dashboard/payment/view/(:num)', 'PaymentController::viewPaymentAdmin/$1', ['filter' => 'isAdmin']);

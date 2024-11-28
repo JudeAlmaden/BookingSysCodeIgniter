@@ -55,8 +55,9 @@
             Home
             </a>
         </li>
-
-        
+        <li>
+            <hr>
+        </li>
         <li>
             <a href="<?= base_url('dashboard/routes/1') ?>" class="nav-link text-white <?= (strpos(current_url(), site_url('dashboard/routes')) !== false) ? 'active' : '' ?>">
             <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
@@ -74,6 +75,9 @@
             <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
             Schedules
             </a>
+        </li>
+        <li>
+            <hr>
         </li>
         <li>
             <a href="<?= base_url('dashboard/bookings/1') ?>" class="nav-link text-white <?= (strpos(current_url(), site_url('dashboard/bookings')) !== false) ? 'active' : '' ?>" >

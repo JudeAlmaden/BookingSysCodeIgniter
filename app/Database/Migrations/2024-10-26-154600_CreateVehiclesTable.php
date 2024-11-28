@@ -39,6 +39,10 @@ class CreateVehiclesTable extends Migration
             'type'           => 'INT',
             'constraint'     => 11,
         ],
+        'status'        => [
+            'type'       => 'VARCHAR',
+            'constraint' => '120',
+        ],
         'created_at'  => [
             'type'       => 'DATETIME',
             'null'       => true,

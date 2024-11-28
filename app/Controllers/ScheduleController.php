@@ -226,6 +226,8 @@ class ScheduleController extends BaseController
         }
     }
 
+    
+
     public function completeTrip($id)
     {
         // Load the SchedulesModel and Bookings model

@@ -5,6 +5,8 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\Vehicles;
+use App\Models\PaymentsModel;
+use App\Models\Bookings;
 
 class VehiclesController extends BaseController
 {
@@ -50,7 +52,7 @@ class VehiclesController extends BaseController
         ])) {
             if ($vehiclesModel->insert($insert)) {
                 // Redirect or return success message
-                return redirect()->to('dashboard/vehicles')->with('success', 'Vehicle added successfully.');
+                return redirect()->back()->with('success', 'Vehicle added successfully.');
             } else {
                 // Redirect or return error message
                 return redirect()->back()->with('error', 'Failed to add vehicle.');
@@ -63,26 +65,39 @@ class VehiclesController extends BaseController
 
     public function getVehicles($tag = null)
     {   
-        $vehiclesModel = new Vehicles();
+        $vehiclesModel = new Vehicles(); // Make sure the namespace is correct
     
-        if ($tag) {
-            $vehicles = $vehiclesModel->like('tag', $tag)->limit(5)->findAll(); 
-        } else {
-            $vehicles = $vehiclesModel->findAll(); 
+        try {
+            $vehiclesModel = new Vehicles();
+    
+            if ($tag) {
+                $vehicles = $vehiclesModel->like('tag', $tag)->where('status',"enabled")->limit(7)->findAll(); 
+            } else {
+                $vehicles = $vehiclesModel->findAll(); 
+            }
+        
+            // Prepare the response data
+            $response = [];
+            foreach ($vehicles as $vehicle) {
+                $response[] = [
+                    'id' => $vehicle['id'], // Adjust according to your database schema
+                    'tag' => $vehicle['tag'],
+                ];
+            }
+        
+            // Return the response as JSON
+            return $this->response->setJSON($response);
+    
+        } catch (\Exception $e) {
+            // Handle any potential errors gracefully and return an error message
+            return $this->response->setStatusCode(500)->setJSON([
+                'status' => 'error',
+                'message' => 'Something went wrong. Please try again later.',
+                'error' => $e->getMessage()
+            ]);
         }
-    
-        // Prepare the response data
-        $response = [];
-        foreach ($vehicles as $vehicle) {
-            $response[] = [
-                'id' => $vehicle['id'], // Adjust according to your database schema
-                'tag' => $vehicle['tag'],
-            ];
-        }
-    
-        // Return the response as JSON
-        return $this->response->setJSON($response);
     }
+    
 
     public function getVehiclesType($type = null)
     {   
@@ -91,7 +106,8 @@ class VehiclesController extends BaseController
         if ($type != "Any") {
             $vehicles = $vehiclesModel->like('type', $type)
             ->groupBy('type')
-            ->limit(5)
+            ->where('status',"enabled")
+            ->limit(7)
             ->findAll(); 
         } else {
             $vehicles = $vehiclesModel->findAll(); 
@@ -108,5 +124,32 @@ class VehiclesController extends BaseController
         // Return the response as JSON
         return $this->response->setJSON($response);
     }
+
+    public function toggleVehicle($id)
+    {
+        // Load the model
+        $vehiclesModel = new Vehicles(); // Update with your actual model path
+        $bookingsModel = new Bookings();
+
+        $vehicle = $vehiclesModel->find($id);
+    
+        if ($vehicle) {
+
+            $newStatus = ($vehicle['status'] === 'enabled') ? 'disabled' : 'enabled';
+            $vehiclesModel->update($id, ['status' => $newStatus]); // update The current Status
+    
+            $bookingsModel->cancelTripsByVehicle($id);
+            exit;
+            session()->setFlashdata('message', 'Vehicle status has been toggled successfully.');
+    
+        } else {
+            // If vehicle not found, set an error message
+            session()->setFlashdata('error', 'Vehicle not found.');
+        }
+    
+
+        return redirect()->back();
+    }
+    
 }
     

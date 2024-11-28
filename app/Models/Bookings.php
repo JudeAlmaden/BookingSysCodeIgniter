@@ -46,6 +46,7 @@ class Bookings extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
     
+    //
     public function updateCancelledTrip($id)
     {
         try {
@@ -98,5 +99,91 @@ class Bookings extends Model
             return 0;
         }
     }
+
+    public function getReservationCountByBookingId($bookingId)
+    {
+        $db = \Config\Database::connect();
+        $reservationQuery = "
+            SELECT schedules.reservations
+            FROM schedules
+            INNER JOIN bookings ON bookings.trip_id = schedules.trip_id
+            WHERE bookings.id = ?
+        ";
+        
+        return $db->query($reservationQuery, [$bookingId])->getRow();
+    }
+
+    // Method to approve reservation (Update reservations count)
+    public function approveReservation($bookingId, $numSeats)
+    {
+        // Update the reservations for the schedule
+        $db = \Config\Database::connect();
+        $reservationUpdateQuery = "
+            UPDATE schedules
+            INNER JOIN bookings ON bookings.trip_id = schedules.trip_id
+            SET schedules.reservations = schedules.reservations + ?
+            WHERE bookings.id = ?
+        ";
+        return $db->query($reservationUpdateQuery, [$numSeats, $bookingId]);
+    }
+
+
+    
+    public function cancelTripsByVehicle($vehicleId)
+    {
+        $db = \Config\Database::connect();
+
+        $scheduleModel = new SchedulesModel();
+        $bookingsModel = new Bookings();
+
+        try {
+            // Get all distinct trip_ids for the given vehicle
+            $query = "
+                SELECT DISTINCT schedules.trip_id 
+                FROM vehicles
+                INNER JOIN schedules ON schedules.vehicle_id = vehicles.id
+                WHERE vehicles.id = ?
+            ";
+
+            // Execute the query to get trip ids
+            $tripIds = $db->query($query, [$vehicleId])->getResultArray();
+
+            // If no trip_ids found
+            if (empty($tripIds)) {
+                return redirect()->back()->with('error', 'No trips found for the specified vehicle.');
+            }
+
+            // Start a database transaction to ensure all updates are done atomically
+            $db->transBegin();
+
+            // Loop through the trip_ids and perform the necessary updates
+            foreach ($tripIds as $trip) {
+                $tripId = $trip['trip_id'];
+                
+                $updateData = [
+                    'status' => 'Cancelled',  // Assuming 'status' column exists in the schedules table
+                ];
+                
+                // Set the satus of the trip to cancelled
+                $scheduleModel->where('trip_id', $tripId)->set($updateData)->update();
+                $bookingsModel->updateCancelledTrip($trip);//Set the bookings related to the trip to waiting for refund, cancelled
+            }
+
+            if ($db->transStatus() === false) {
+                // Rollback if something went wrong
+                $db->transRollback();
+                return redirect()->back()->with('error', 'An error occurred while canceling the trips.');
+            }
+
+            $db->transCommit();
+
+            return redirect()->back()->with('success', 'All bookings for the trips have been marked as cancelled and waiting for refund.');
+            
+        } catch (\Exception $e) {
+            $db->transRollback();
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
+    }
+
 
 }

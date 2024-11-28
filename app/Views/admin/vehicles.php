@@ -68,11 +68,13 @@
       <tr class="bg-dark text-light">
         <th >#</th>
         <th >Tag</th>
-        <th >Description</th>
+        <th >Type</th>
         <th >Description</th>
         <th >Number of Seats</th>
         <th >Base Fare</th>
-        <th >Per kilimeter</th>
+        <th >Per kil0meter</th>
+        <th >Current Status</th>
+        <th >Toggle</th>
       </tr>
     </thead>
     <tbody>
@@ -86,11 +88,17 @@
                   <td ><?= $vehicle['number_seats'] ?></td>
                   <td ><?= $vehicle['base_fare'] ?></td>
                   <td ><?= $vehicle['per_kilometer'] ?></td>
+                  <td ><?= $vehicle['status'] ?></td>
+                  <td>
+                  <a href="<?= site_url('dashboard/vehicles/toggle/' . $vehicle['id']) ?>" class="btn btn-warning w-100 mb-2">
+                      <i class="bi bi-pencil-square"></i> Change Status
+                  </a>
+                  </td>
               </tr>
           <?php endforeach; ?>
       <?php else: ?>
         <tr>
-            <td colspan="3">No vehicles</td>
+            <td colspan="9">No vehicles</td>
         </tr>
       <?php endif; ?>
     </tbody>

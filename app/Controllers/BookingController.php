@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\SchedulesModel;
 use App\Models\PaymentsModel;
+use App\Models\Vehicles;
 use Exception;
 use PDOException;
 use App\Models\Bookings;
@@ -214,21 +215,11 @@ class BookingController extends BaseController
         $schedules = new SchedulesModel();
         $perPage = 20;
     
-        // Join with the `users` table and fetch necessary data
         $data['bookings'] = $bookingsModel->select('bookings.*, users.name')  // Select all bookings fields and user's name
             ->join('users', 'users.id = bookings.user_id')  // Join condition
             ->where('bookings.status', 'Pending')  // Filter by pending status
             ->paginate($perPage, 'default', $page);
     
-            // Join with the users table and fetch necessary data
-            // $data['bookings'] = $bookingsModel->select('bookings.*, users.name')  // Select all bookings fields and user's name
-            // ->join('users', 'users.id = bookings.user_id')  // Join condition
-            // ->orderBy('CASE WHEN bookings.status = "Pending" THEN 1 ELSE 2 END', 'ASC')  // Prioritize pending bookings
-            // ->orderBy('bookings.created_at', 'DESC')  // Further order by creation date (optional)
-            // ->paginate($perPage, 'default', $page);
-
-
-        // Iterate through each booking and get the current capacity for the associated trip
         foreach ($data['bookings'] as &$booking) {
             // Get current capacity using the trip_id from the booking
             $capacityData = $schedules->getCurrentCapacity($booking['from'], $booking['to'], $booking['trip_id']);
@@ -263,52 +254,42 @@ class BookingController extends BaseController
     public function approve($bookingId)
     {
         $bookingModel = new Bookings();
-        $schedulesModel = new SchedulesModel(); // Assuming you have a model for schedules
+        $vehiclesModel = new Vehicles();
+        $schedulesModel = new SchedulesModel();
     
         // First, check if there are enough available seats
-        $db = \Config\Database::connect();
-        $seatQuery = "
-            SELECT vehicles.number_seats
-            FROM vehicles
-            INNER JOIN schedules AS schedule_vehicle ON schedule_vehicle.vehicle_id = vehicles.id
-            INNER JOIN bookings ON bookings.trip_id = schedule_vehicle.trip_id
-            WHERE bookings.id = ?
-            GROUP BY vehicles.id
-        ";
-        
-        // Execute the query to get the vehicle's seat capacity
-        $seatResult = $db->query($seatQuery, [$bookingId])->getRow();
+        try {
+            // Get the vehicle seat count
+            $seatResult = $vehiclesModel->getVehicleSeatCountByBookingId($bookingId);
     
-        // Check if the vehicle has enough seats
-        if ($seatResult) {
-            // Get the current reservations count for the trip
-            $reservationQuery = "
-                SELECT schedules.reservations
-                FROM schedules
-                INNER JOIN bookings ON bookings.trip_id = schedules.trip_id
-                WHERE bookings.id = ?
-            ";
-            $reservationResult = $db->query($reservationQuery, [$bookingId])->getRow();
-            
-            // Calculate the total reservations (existing reservations + new booking seats)
-            $totalReservations = $reservationResult->reservations + $bookingModel->find($bookingId)['num_seats'];
+            if ($seatResult) {
+                // Get the current reservation count for the trip
+                $reservationResult = $schedulesModel->getReservationCountByBookingId($bookingId);
     
-            // Check if the total reservations exceed the vehicle's capacity
-            if ($totalReservations <= $seatResult->number_seats) {
-                // Update the booking status to 'Approved' and add seats to the schedule
-                $bookingModel->update($bookingId, ['status' => 'Approved']);
-                $schedulesModel->approveReservation($bookingId);
+                // Calculate total reservations (existing + new booking)
+                $totalReservations = $reservationResult->reservations + $bookingModel->find($bookingId)['num_seats'];
     
-                // Redirect with success message
-                return redirect()->to(base_url('dashboard/bookings/1'))->with('success', 'Booking approved successfully');
+                // Check if total reservations exceed vehicle seat capacity
+                if ($totalReservations <= $seatResult->number_seats) {
+                    // Update the booking status to 'Approved' and add seats to the schedule
+                    $bookingModel->update($bookingId, ['status' => 'Approved']);
+                    $schedulesModel->approveReservation($bookingId, $bookingModel->find($bookingId)['num_seats']);
+    
+                    // Redirect with success message
+                    return redirect()->to(base_url('dashboard/bookings/1'))->with('success', 'Booking approved successfully');
+                } else {
+                    // Display error if there are not enough seats
+                    session()->setFlashdata('errors', 'Not enough seats available on the vehicle');
+                    return redirect()->to(base_url('dashboard/bookings/1'));
+                }
             } else {
-                // Display an error if there are not enough seats
-                session()->setFlashdata('errors', 'Not enough seats available on the vehicle');
+                // If no seat result, display error
+                session()->setFlashdata('errors', 'Could not find the vehicle or trip details');
                 return redirect()->to(base_url('dashboard/bookings/1'));
             }
-        } else {
-            // If there was no seat result, display an error
-            session()->setFlashdata('errors', 'Could not find the vehicle or trip details');
+        } catch (\Exception $e) {
+            // Handle any potential errors gracefully
+            session()->setFlashdata('errors', 'An error occurred while approving the booking: ' . $e->getMessage());
             return redirect()->to(base_url('dashboard/bookings/1'));
         }
     }

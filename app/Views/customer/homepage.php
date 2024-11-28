@@ -353,13 +353,17 @@
     $('#fromLocation').on('input', function() {
         var query = $(this).val();
         //Clear values
-        if (query.length > 0) {
+        if (query.length > 0 && !isQuerying) {
           let url = `<?= site_url("stops/search/") ?>${encodeURIComponent(query)}`;
 
+          isQuerying = true;
           $.ajax({
               url: url, 
               type: 'GET',
               dataType: 'json',
+              complete:function(){
+                isQuerying = false;
+              },
               success: function(data) {
                 $('#suggestionsFromLocation').empty(); 
                 if (data.length > 0) {
@@ -396,13 +400,19 @@
           //Clear values
           $('#suggestionsToLocation').empty(); 
 
-          if (query.length > 0) {
+            
+          if (query.length > 0 && !isQuerying) {
+
             let url = `<?= site_url("stops/search/") ?>${encodeURIComponent(query)}`;
+            isQuerying= true;
 
             $.ajax({
                 url: url, 
                 type: 'GET',
                 dataType: 'json',
+                complete:function(){
+                    isQuerying = false;
+                },
                 success: function(data) {
                   $('#suggestionsFromLocation').empty(); 
                   if (data.length > 0) {
@@ -440,13 +450,17 @@
           //Clear values
           $('#suggestionType').empty(); 
 
-          if (query.length > 0) {
+          if (query.length > 0 && !isQuerying) {
             let url = `<?= site_url("vehicles/type/get/") ?>${encodeURIComponent(query)}`;
+            isQuerying=true;
 
             $.ajax({
                 url: url, 
                 type: 'GET',
-                dataType: 'json',
+                dataType: 'json',              
+                complete:function(){
+                    isQuerying = false;
+                },
                 success: function(data) {
                   $('#suggestionsFromLocation').empty(); 
 

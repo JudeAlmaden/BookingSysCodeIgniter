@@ -63,7 +63,7 @@ class RoutesController extends BaseController
         }
     
         // Redirect to the routes page
-        return redirect()->to('dashboard/routes');
+        return redirect()->to('dashboard/routes/1');
     }
 
     
@@ -93,7 +93,7 @@ class RoutesController extends BaseController
             //Initial Validation 
             if (!$this->validate($rules, $errors)) {
                 session()->setFlashdata('errors', $this->validator);
-                return redirect()->to('dashboard/routes');
+                return redirect()->back();
             }
 
             //Validate arrays
@@ -125,7 +125,7 @@ class RoutesController extends BaseController
             // If there are custom validation errors, return them
             if (!empty($customErrors)) {
                 session()->setFlashdata('errors', 'Stations and distances arrays must have the same length.');
-                return redirect()->to('dashboard/routes');
+                return redirect()->to('dashboard/routes/1');
             }
             
     
@@ -134,7 +134,7 @@ class RoutesController extends BaseController
 
             if (!empty($exists)) {
                 session()->setFlashdata('errors', 'Name already exsist');
-                return redirect()->to('dashboard/routes');
+                return redirect()->to('dashboard/routes/1');
             }
             
             // Insert the Route
@@ -168,10 +168,10 @@ class RoutesController extends BaseController
             }
             $routeStopsModel->insertBatch($routeStopsData);
             session()->setFlashdata('success', 'Route Has been created successfully!.');
-            return redirect()->to('dashboard/routes');
+            return redirect()->to('dashboard/routes/1');
         }
         session()->setFlashdata('errors', 'Incorrect Method');
-        return redirect()->to('dashboard/routes');
+        return redirect()->to('dashboard/routes/1');
     }
 
     public function getRoutes($name = null)
