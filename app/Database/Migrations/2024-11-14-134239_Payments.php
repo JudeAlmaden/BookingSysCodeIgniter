@@ -12,18 +12,15 @@ class Payments extends Migration
             'id' => [
                 'type'           => 'INT',
                 'constraint'     => 11,
-                'unsigned'       => true,
                 'auto_increment' => true,
             ],
             'user_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
-                'unsigned'   => true,
             ],
             'booking_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
-                'unsigned'   => true,
             ],
             'amount' => [
                 'type'       => 'DECIMAL',
@@ -45,7 +42,7 @@ class Payments extends Migration
             ],
             'created_at' => [
                 'type' => 'DATETIME',
-                'null' => true,
+                'null' => false,
             ],
             'updated_at' => [
                 'type' => 'DATETIME',

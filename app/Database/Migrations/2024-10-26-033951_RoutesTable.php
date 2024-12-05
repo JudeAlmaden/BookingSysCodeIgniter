@@ -13,17 +13,16 @@ class RoutesTable extends Migration
             'id'          => [
                 'type'           => 'INT',
                 'constraint'     => 11,
-                'unsigned'       => true,
                 'auto_increment' => true,
             ],
             'name'        => [
                 'type'       => 'VARCHAR',
-                'constraint' => '120',
+                'constraint' => '255',
                 'unique'     => true, 
             ],
             'created_at'  => [
                 'type'       => 'DATETIME',
-                'null'       => true,
+                'null' => false,
             ],
             'updated_at'  => [
                 'type'       => 'DATETIME',

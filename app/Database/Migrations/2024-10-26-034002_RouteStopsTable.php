@@ -13,32 +13,30 @@ class RouteStopsTable extends Migration
             'id'          => [
                 'type'           => 'INT',
                 'constraint'     => 11,
-                'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'route'        => [
+            'route_id'        => [
                 'type'           => 'INT',
                 'constraint'     => 11,
-                'unsigned'       => true,
             ],
             'name'        => [
                 'type'       => 'VARCHAR',
-                'constraint' => '120',
+                'constraint' => '255',
                 'null' => false,
             ],
             'distance'        => [
                 'type'           => 'INT',
                 'constraint'     => 11,
-                'unsigned'       => true,
+                'null' => false,
             ],
             'index'        => [
                 'type'           => 'INT',
                 'constraint'     => 11,
-                'unsigned'       => true,
+                'null' => false,
             ],
             'created_at'  => [
                 'type'       => 'DATETIME',
-                'null'       => true,
+                'null' => false,
             ],
             'updated_at'  => [
                 'type'       => 'DATETIME',
@@ -47,7 +45,7 @@ class RouteStopsTable extends Migration
         ]);
         $this->forge->addKey('id', true);  // Primary key
         $this->forge->createTable('route_stops');
-        $this->forge->addForeignKey('route', 'routes', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('route_id', 'routes', 'id', 'CASCADE', 'CASCADE');
     }
 
 public function down()

@@ -12,16 +12,15 @@ class CreateUsersTable extends Migration
             'id'          => [
                 'type'           => 'INT',
                 'constraint'     => 11,
-                'unsigned'       => true,
                 'auto_increment' => true,
             ],
             'name'        => [
                 'type'       => 'VARCHAR',
-                'constraint' => '120',
+                'constraint' => '255',
             ],
             'email'       => [
                 'type'       => 'VARCHAR',
-                'constraint' => '120',
+                'constraint' => '255',
             ],
             'phone_no'    => [
                 'type'       => 'VARCHAR',
@@ -38,7 +37,7 @@ class CreateUsersTable extends Migration
             ],
             'created_at'  => [
                 'type'       => 'DATETIME',
-                'null'       => true,
+                'null' => false,
             ],
             'updated_at'  => [
                 'type'       => 'DATETIME',

@@ -13,23 +13,20 @@ class Bookings extends Migration
             'id' => [
                 'type'           => 'INT',
                 'constraint'     => 11,
-                'unsigned'       => true,
                 'auto_increment' => true,
             ],
             'user_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
-                'unsigned'   => true,
             ],
             'trip_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
-                'unsigned'   => true,
             ],
             'distance' => [  
                 'type'       => 'INT',
                 'constraint' => 11,
-                'unsigned'   => true,
+
             ],
             'num_seats' => [  
                 'type'       => 'INT',
@@ -58,7 +55,7 @@ class Bookings extends Migration
             ],
             'created_at'  => [
                 'type'       => 'DATETIME',
-                'null'       => true,
+                'null' => false,
             ],
             'updated_at'  => [
                 'type'       => 'DATETIME',
@@ -67,6 +64,7 @@ class Bookings extends Migration
         ]);
     
         $this->forge->addKey('id', true);  // Primary key
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('bookings');
     }        
 
