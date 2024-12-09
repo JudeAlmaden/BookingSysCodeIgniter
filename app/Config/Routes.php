@@ -25,6 +25,7 @@ $routes->get('dashboard/refunds/(:num)', 'PaymentController::refund/$1', ['filte
 
 // Toggling vehicle
 $routes->get('dashboard/vehicles/toggle/(:num)', 'VehiclesController::toggleVehicle/$1', ['filter' => 'isAdmin']); // Get vehicles by type
+$routes->post('dashboard/vehicles/update', 'VehiclesController::updateVehicle', ['filter' => 'isAdmin']); // Get vehicles by type
 
 // Route Manipulation
 $routes->match(['get', 'post'], 'dashboard/routes/view/(:num)', 'RoutesController::viewRoute/$1', ['filter' => 'isAdmin']); // View route details
@@ -36,13 +37,15 @@ $routes->get('dashboard/schedule/view/(:num)', 'ScheduleController::view/$1', ['
 $routes->get('dashboard/schedules/reservations/(:num)', 'ScheduleController::viewReservations/$1', ['filter' => 'isAdmin']); //View
 $routes->get('dashboard/schedules/cancel/(:num)', 'ScheduleController::cancelTrip/$1', ['filter' => 'isAdmin']); // Get vehicles by type
 $routes->get('dashboard/schedules/complete/(:num)', 'ScheduleController::completeTrip/$1', ['filter' => 'isAdmin']); // Get vehicles by type
+$routes->get('dashboard/cancel-booking/(:num)', 'BookingController::cancelBooking/$1');
+
 
 //Payments
 $routes->get('dashboard/payment/view/(:num)', 'PaymentController::viewPaymentAdmin/$1', ['filter' => 'isAdmin']);
 $routes->post('payment/approve/(:num)', 'PaymentController::approve/$1', ['filter' => 'isAdmin']);
 $routes->post('payment/reject/(:num)', 'PaymentController::reject/$1', ['filter' => 'isAdmin']);
 
-//Bookings
+//Booking
 $routes->get('dashboard/bookings/approve/(:num)', 'BookingController::approve/$1', ['filter' => 'isAdmin']);
 $routes->get('dashboard/bookings/decline/(:num)', 'BookingController::decline/$1', ['filter' => 'isAdmin']);
 

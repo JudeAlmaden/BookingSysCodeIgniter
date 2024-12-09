@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Database\Migrations\Schedules;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\SchedulesModel;
 use App\Models\PaymentsModel;
@@ -253,8 +254,7 @@ class BookingController extends BaseController
     {
         $bookingModel = new Bookings();
         $schedulesModel = new SchedulesModel();
-    
-        // First, check if there are enough available seats
+
         try {
             // Get the vehicle seat count
             $booking = $bookingModel->getBooking($bookingId);
@@ -291,7 +291,6 @@ class BookingController extends BaseController
         }
     }
     
-    
     public function decline($bookingId)
     {
         $bookingModel = new Bookings();
@@ -303,4 +302,22 @@ class BookingController extends BaseController
         return redirect()->to(base_url('dashboard/bookings/1'))->with('success', 'Booking declined successfully');
     }
 
+    public function cancelBooking($bookingId)
+    {
+        try {
+            $bookingModel = new Bookings();
+            // Attempt to cancel the booking and update the payment status
+            $success = $bookingModel->cancelBookingAndPayment($bookingId);
+    
+            if ($success) {
+                return redirect()->to('dashboard/schedules/1')->with('success', 'Booking and payment status updated successfully.');
+            } else {
+                return redirect()->to('dashboard/schedules/1')->with('error', 'Failed to update booking or payment status.');
+            }
+        } catch (\Exception $e) {
+            // In case of an error
+            return redirect()->to('/dashboard/vehicles')->with('error', $e->getMessage());
+        }
+    }
+    
 }

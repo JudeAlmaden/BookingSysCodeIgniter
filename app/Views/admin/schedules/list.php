@@ -42,7 +42,7 @@
         <th scope="">Initial Departure</th>
         <th scope="">Final stop</th>
         <th scope="">Status</th>
-        <td class="">Actions</td>
+        <td class="text-center">Actions</td>
       </tr>
     </thead>
     <tbody>
@@ -60,27 +60,29 @@
                 <td class="col-auto">
                     <?=$schedule['trip_status']?>
                 </td>
-                <td class="col-auto">
-                    <a href="<?= base_url('dashboard/schedule/view/' . $schedule['trip_id']) ?>" class="btn btn-primary btn-sm">
+                <td class="col-auto d-flex align-items-center justify-content-center">
+                    <!-- View Button -->
+                    <a href="<?= base_url('dashboard/schedule/view/' . $schedule['trip_id']) ?>" class="btn btn-primary">
                         <i>View</i>
                     </a>
-                
-                    <!-- Check if the status is "Not Available" and disable buttons -->
+
+                    <!-- Check if the trip status is 'Available' -->
                     <?php if ($schedule['trip_status'] == 'Available'): ?>
-                        <a href="<?= base_url('/dashboard/schedules/complete/' . $schedule['trip_id']) ?>" class="btn btn-success btn-sm">
+                        <!-- 'Mark as Completed' Button -->
+                        <a href="<?= base_url('/dashboard/schedules/complete/' . $schedule['trip_id']) ?>" class="btn btn-success mx-1">
                             Mark as Completed
                         </a>
 
-                        <a href="<?= base_url('/dashboard/schedules/cancel/' . $schedule['trip_id']) ?>" class="btn btn-danger btn-sm">
+                        <!-- 'Cancel' Button -->
+                        <a href="<?= base_url('/dashboard/schedules/cancel/' . $schedule['trip_id']) ?>" class="btn btn-danger">
                             Cancel
                         </a>
                     <?php else: ?>
-                        <!-- Disabled Mark as Completed and Cancel buttons -->
-                        <button class="btn btn-success btn-sm" disabled>Mark as Completed</button>
+                        <!-- Disabled 'Mark as Completed' and 'Cancel' Buttons -->
+                        <button class="btn btn-success btn-sm mx-1" disabled>Mark as Completed</button>
                         <button class="btn btn-danger btn-sm" disabled>Cancel</button>
                     <?php endif; ?>
                 </td>
-
               </tr>
           <?php endforeach; ?>
       <?php else: ?>

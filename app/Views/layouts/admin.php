@@ -41,6 +41,7 @@
             scrollbar-color: #555 #e0e0e0;  /* Thumb color and track color */
         }
    </style>
+   
 </head>
 <body style="height:100vh">
     <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark h-100 position-fixed" style="width: 280px;">
@@ -82,7 +83,7 @@
         <li>
             <a href="<?= base_url('dashboard/bookings/1') ?>" class="nav-link text-white <?= (strpos(current_url(), site_url('dashboard/bookings')) !== false) ? 'active' : '' ?>" >
             <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
-            Bookings
+            Pending Bookings
             </a>
         </li>
         <li>

@@ -100,33 +100,6 @@ class Bookings extends Model
         }
     }
 
-    public function getReservationCountByBookingId($bookingId)
-    {
-        $db = \Config\Database::connect();
-        $reservationQuery = "
-            SELECT schedules.reservations
-            FROM schedules
-            INNER JOIN bookings ON bookings.trip_id = schedules.trip_id
-            WHERE bookings.id = ?
-        ";
-        
-        return $db->query($reservationQuery, [$bookingId])->getRow();
-    }
-
-    // Method to approve reservation (Update reservations count)
-    public function approveReservation($bookingId, $numSeats)
-    {
-        // Update the reservations for the schedule
-        $db = \Config\Database::connect();
-        $reservationUpdateQuery = "
-            UPDATE schedules
-            INNER JOIN bookings ON bookings.trip_id = schedules.trip_id
-            SET schedules.reservations = schedules.reservations + ?
-            WHERE bookings.id = ?
-        ";
-        return $db->query($reservationUpdateQuery, [$numSeats, $bookingId]);
-    }
-
     public function getBooking($bookingId)
     {
         // Update the reservations for the schedule
@@ -140,7 +113,6 @@ class Bookings extends Model
         return $query->getRow();
     }
     
-
     public function cancelTripsByVehicle($vehicleId)
     {
         $db = \Config\Database::connect();
@@ -197,5 +169,39 @@ class Bookings extends Model
         }
     }
 
-
+    public function cancelBookingAndPayment($bookingId)
+    {
+        $db = \Config\Database::connect();
+        $scheduleModel = new SchedulesModel();
+    
+        try {
+            // Start a transaction
+            $db->transBegin();
+    
+            // Update the booking status to 'Cancelled' and the payment status to 'Waiting for refund'
+            $db->query("
+                UPDATE bookings
+                SET status = 'Cancelled'
+                WHERE id = ?
+            ", [$bookingId]);
+    
+            $db->query("
+                UPDATE payments
+                SET status = 'Waiting for refund'
+                WHERE booking_id = ? AND status = 'Approved'
+            ", [$bookingId]);
+    
+            // Update the reservations count in the schedules table
+            $scheduleModel->cancelReservation($bookingId);
+    
+            // Commit the transaction if everything was successful
+            $db->transCommit();
+            return true;
+        } catch (\Exception $e) {
+            // Rollback in case of error
+            $db->transRollback();
+            throw new \Exception('An error occurred: ' . $e->getMessage());
+        }
+    }
+    
 }

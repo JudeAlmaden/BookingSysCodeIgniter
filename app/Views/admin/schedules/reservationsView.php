@@ -27,6 +27,7 @@
                             <th>Amount Paid</th>
                             <th>Payment Status</th>
                             <th>Passenger Status</th>
+                            <th>Remove Passenger</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,6 +43,11 @@
                                 <td><?= esc($passenger['amount_paid']) ?></td>
                                 <td><?= esc($passenger['payment_status']) ?></td>
                                 <td><?= esc($passenger['passenger_status']) ?></td>
+                                <td>
+                                    <a href="<?= site_url('dashboard/cancel-booking/' . esc($passenger['booking_id'])) ?>" class="btn btn-danger">
+                                        Cancel Booking
+                                    </a>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

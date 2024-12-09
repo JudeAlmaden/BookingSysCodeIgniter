@@ -44,7 +44,7 @@
                             <span class="badge bg-danger col-12">Cancelled</span>
                         <?php endif; ?>
                     </td>
-                    <td><?= $booking['payment_status'] ?></td>
+                    <td><?= !empty($booking['payment_status']) ? esc($booking['payment_status']) : 'None' ?></td>
                     <td><?= $booking['from'] ?></td>
                     <td><?= $booking['to'] ?></td>
                     <td><?= date('F j, Y, g:i a', strtotime($booking['created_at'])) ?></td>

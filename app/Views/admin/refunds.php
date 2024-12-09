@@ -26,22 +26,22 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Payment ID</th>
-                        <th>Booking ID</th>
-                        <th>Amount</th>
-                        <th>Actions</th>
+                        <th class="text-center">Payment ID</th>
+                        <th class="text-center">Booking ID</th>
+                        <th class="text-center">Amount</th>
+                        <th class="text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (count($payments) > 0): ?>
                         <?php foreach ($payments as $payment): ?>
-                            <tr>
+                            <tr class="text-center">
                                 <td><?= $payment['id'] ?></td>
                                 <td><?= $payment['booking_id'] ?></td>
                                 <td>₱<?= number_format($payment['amount'], 2) ?></td>
                                 <td>
                                     <div class="d-flex justify-content-start">
-                                        <form action="<?= base_url('dashboard/payment/view/' . $payment['booking_id']) ?>" method="GET" class="d-inline col-4">
+                                        <form action="<?= base_url('dashboard/payment/view/' . $payment['booking_id']) ?>" method="GET" class="d-inline col-12">
                                             <button type="submit" class="btn btn-primary me-2 w-100">
                                                 <i class="fas fa-eye"></i> View Details
                                             </button>

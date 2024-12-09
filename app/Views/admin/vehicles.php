@@ -1,50 +1,5 @@
 <?= $this->extend("layouts/admin") ?>
-
 <?= $this->section("body") ?>
-
-<!-- Modal -->
-<div  class="modal fade" id="create" tabindex="-1"  aria-hidden="true" ata-bs-target="#staticBackdrop">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header text-center ">
-        <h4 class="modal-title w-auto">Create a new route</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-
-      <div class="modal-body">
-        <form id="add-vehicle" class="position-relative" action="<?= site_url('dashboard/vehicles') ?>" method="POST">
-          <div class="form-group">
-            <label for="vehicleID border-light">Vehicle Info</label>
-            <input type="text" class="form-control" id="vehicleID" placeholder="Vehicle tag or ID" required name="tag">
-            <small id="tag" class="form-text text-muted">Example: Lucena Lines No. 1238</small>
-            <input type="number" class="form-control" id="numberOfSeats" placeholder="Max Seats" required name="number_seats">
-            <small id="tag" class="form-text text-muted">Example: 26</small>
-            <input type="text" class="form-control" id="vehicleType" placeholder="Type of vehicle" required name="type">
-            <small id="tag" class="form-text text-muted">Example: Bus, Taxi, Ferry Boat</small>
-            <br>
-            <br>
-            <label for="vehivehicleDescriptioncleID border-light">Vehicle Description</label>
-            <textarea class="form-control" id="vehicleDescription" rows="3" required name="description"></textarea>
-          </div>
-
-          <hr><br>
-
-          <div class="form-group">
-            <label for="vehicleID border-light">Fare information</label>
-            <input type="number" class="form-control mb-2" id="baseFare" placeholder="Base Fare"required  name="base_fare">
-            <input type="number" class="form-control" id="baseFare" placeholder="Per Kilometer" required name="per_kilometer">
-          </div>
-        </form>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary" form="add-vehicle">Add</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 
 <div class="container">
   <div class="row align-items-center">
@@ -74,48 +29,133 @@
 
 <hr>
 
-<div class="container-fluid border border-light border-1 shadow-sm rounded-3 p-5 m-0 ">
-  <!-- Button trigger modal -->
-  <table class="table table-striped table-hoverable w-100">
-    <thead>
-      <tr class="bg-dark text-light">
-        <th >#</th>
-        <th >Tag</th>
-        <th >Type</th>
-        <th >Description</th>
-        <th >Number of Seats</th>
-        <th >Base Fare</th>
-        <th >Per kil0meter</th>
-        <th >Current Status</th>
-        <th >Toggle</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php if(!empty($vehicles)): ?>
-          <?php foreach($vehicles as $vehicle): ?>
-              <tr>
-                  <td ><?= $vehicle['id'] ?></td>
-                  <td ><?= $vehicle['tag'] ?></td>
-                  <td ><?= $vehicle['type'] ?></td>
-                  <td ><?= $vehicle['description'] ?></td>
-                  <td ><?= $vehicle['number_seats'] ?></td>
-                  <td ><?= $vehicle['base_fare'] ?></td>
-                  <td ><?= $vehicle['per_kilometer'] ?></td>
-                  <td ><?= $vehicle['status'] ?></td>
-                  <td>
-                  <a href="<?= site_url('dashboard/vehicles/toggle/' . $vehicle['id']) ?>" class="btn btn-warning w-100 mb-2">
-                      <i class="bi bi-pencil-square"></i> Change Status
-                  </a>
-                  </td>
-              </tr>
-          <?php endforeach; ?>
-      <?php else: ?>
+<!-- Modal -->
+<div class="modal fade" id="create" tabindex="-1" aria-hidden="true" ata-bs-target="#staticBackdrop">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-auto" id="modal-title">Create a new route</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="operation-vehicle" class="position-relative" action="<?= site_url('dashboard/vehicles') ?>" method="POST">
+          <input type="hidden" name="id" id="vehicle-id">
+          <div class="form-group">
+            <label for="vehicleID">Vehicle Info</label>
+            <input type="text" class="form-control" id="vehicleID" placeholder="Vehicle tag or ID" required name="tag">
+            <small id="tag-help" class="form-text text-muted">Example: Lucena Lines No. 1238</small>
+            <input type="number" class="form-control" id="numberOfSeats" placeholder="Max Seats" required name="number_seats">
+            <small class="form-text text-muted">Example: 26</small>
+            <input type="text" class="form-control" id="vehicleType" placeholder="Type of vehicle" required name="type">
+            <small class="form-text text-muted">Example: Bus, Taxi, Ferry Boat</small>
+            <br>
+            <label for="vehicleDescription">Vehicle Description</label>
+            <textarea class="form-control" id="vehicleDescription" rows="3" required name="description"></textarea>
+          </div>
+
+          <hr><br>
+
+          <div class="form-group">
+            <label for="baseFare">Fare information</label>
+            <input type="number" class="form-control mb-2" id="baseFare" placeholder="Base Fare" required name="base_fare">
+            <input type="number" class="form-control" id="perKilometer" placeholder="Per Kilometer" required name="per_kilometer">
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" form="operation-vehicle">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Vehicle Table -->
+<table class="table table-striped table-hoverable w-100">
+  <thead>
+    <tr class="bg-dark text-light">
+      <th>#</th>
+      <th>Tag</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Number of Seats</th>
+      <th>Base Fare</th>
+      <th>Per kilometer</th>
+      <th>Current Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php if (!empty($vehicles)): ?>
+      <?php foreach ($vehicles as $vehicle): ?>
         <tr>
-            <td colspan="9">No vehicles</td>
+          <td><?= $vehicle['id'] ?></td>
+          <td><?= $vehicle['tag'] ?></td>
+          <td><?= $vehicle['type'] ?></td>
+          <td><?= $vehicle['description'] ?></td>
+          <td><?= $vehicle['number_seats'] ?></td>
+          <td><?= $vehicle['base_fare'] ?></td>
+          <td><?= $vehicle['per_kilometer'] ?></td>
+          <td><?= $vehicle['status'] ?></td>
+          <td>
+            <a href="<?= site_url('dashboard/vehicles/toggle/' . $vehicle['id']) ?>" 
+              class="btn btn-warning col-5 mb-2" 
+              onclick="return confirm('Are you sure you want to change the status of this vehicle? This will cancel all bookings and trips associated');">
+              <i class="bi bi-pencil-square"></i>Toggle
+            </a>
+            <button class="btn btn-primary col-5 mb-2 edit-btn" 
+                    data-id="<?= $vehicle['id'] ?>"
+                    data-tag="<?= $vehicle['tag'] ?>"
+                    data-type="<?= $vehicle['type'] ?>"
+                    data-description="<?= $vehicle['description'] ?>"
+                    data-number_seats="<?= $vehicle['number_seats'] ?>"
+                    data-base_fare="<?= $vehicle['base_fare'] ?>"
+                    data-per_kilometer="<?= $vehicle['per_kilometer'] ?>">
+              <i class="bi bi-pencil-square"></i> Edit
+            </button>
+          </td>
         </tr>
-      <?php endif; ?>
-    </tbody>
-  </table>
+      <?php endforeach; ?>
+    <?php else: ?>
+      <tr>
+        <td colspan="9">No vehicles</td>
+      </tr>
+    <?php endif; ?>
+  </tbody>
+</table>
+
+<script>
+  // JavaScript to handle Edit button clicks
+  document.querySelectorAll('.edit-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      // Populate modal fields with the vehicle data
+      document.getElementById('vehicle-id').value = button.dataset.id;
+      document.getElementById('vehicleID').value = button.dataset.tag;
+      document.getElementById('vehicleType').value = button.dataset.type;
+      document.getElementById('vehicleDescription').value = button.dataset.description;
+      document.getElementById('numberOfSeats').value = button.dataset.number_seats;
+      document.getElementById('baseFare').value = button.dataset.base_fare;
+      document.getElementById('perKilometer').value = button.dataset.per_kilometer;
+
+      // Update modal title and form action for editing
+      document.getElementById('modal-title').innerText = 'Edit Vehicle';
+      document.getElementById('operation-vehicle').action = "<?= site_url('dashboard/vehicles/update/') ?>";
+
+      // Show modal
+      new bootstrap.Modal(document.getElementById('create')).show();
+    });
+  });
+
+  // Clear modal fields when opened for adding a new vehicle
+  document.querySelector('[data-bs-target="#create"]').addEventListener('click', () => {
+    document.getElementById('operation-vehicle').reset();
+    document.getElementById('modal-title').innerText = 'Create a new route';
+    document.getElementById('operation-vehicle').action = "<?= site_url('dashboard/vehicles') ?>";
+  });
+</script>
+
 
   <nav aria-label="Page navigation example">
       <ul class="pagination justify-content-end">

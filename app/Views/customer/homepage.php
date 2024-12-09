@@ -389,7 +389,7 @@
       var fromLocation = $(this).text();
     
       $('#fromLocation').val(fromLocation); 
-      $('#suggestionsToLocation').empty();
+      $('#suggestionsFromLocation').empty();
 
     });
 
@@ -399,8 +399,6 @@
 
           //Clear values
           $('#suggestionsToLocation').empty(); 
-
-            
           if (query.length > 0 && !isQuerying) {
 
             let url = `<?= site_url("stops/search/") ?>${encodeURIComponent(query)}`;
@@ -414,7 +412,7 @@
                     isQuerying = false;
                 },
                 success: function(data) {
-                  $('#suggestionsFromLocation').empty(); 
+                  $('#suggestionsToLocation').empty(); 
                   if (data.length > 0) {
                       $.each(data, function(index, location) {
                           $('#suggestionsToLocation').append(
@@ -426,7 +424,7 @@
                   }
                 },
               error: function() {
-                $('#suggestionsFromLocation').empty(); 
+                $('#suggestionsToLocation').empty(); 
                 $('#suggestionsToLocation').append('<div class="list-group-item-to-location list-group-item">Error fetching results</div>');
               }
             });
@@ -462,7 +460,6 @@
                     isQuerying = false;
                 },
                 success: function(data) {
-                  $('#suggestionsFromLocation').empty(); 
 
                   if (data.length > 0) {
                       $.each(data, function(index, vehicle) {
@@ -475,7 +472,6 @@
                   }
                 },
               error: function() {
-                $('#suggestionsFromLocation').empty();   
                 $('#suggestionType').append('<div class="list-group-item-type list-group-item">Error fetching results</div>');
               }
             });

@@ -89,7 +89,7 @@ class VehiclesController extends BaseController
             
             foreach ($vehicles as $vehicle) {
                 $response[] = [
-                    'id' => $vehicle['id'], // Adjust according to your database schema
+                    'id' => $vehicle['id'],
                     'tag' => $vehicle['tag'],
                 ];
             }
@@ -98,7 +98,6 @@ class VehiclesController extends BaseController
             return $this->response->setJSON($response);
     
         } catch (\Exception $e) {
-            // Handle any potential errors gracefully and return an error message
             return $this->response->setStatusCode(500)->setJSON([
                 'status' => 'error',
                 'message' => 'Something went wrong. Please try again later.',
@@ -107,7 +106,43 @@ class VehiclesController extends BaseController
         }
     }
     
-
+    public function updateVehicle()
+    {
+        $vehiclesModel = new Vehicles();
+    
+        // Prepare data to update
+        $updateData = [
+            'tag' => $this->request->getPost('tag'),
+            'type' => $this->request->getPost('type'),
+            'description' => $this->request->getPost('description'),
+            'number_seats' => $this->request->getPost('number_seats'),
+            'base_fare' => $this->request->getPost('base_fare'),
+            'per_kilometer' => $this->request->getPost('per_kilometer'),
+        ];
+    
+        // Validate data
+        if ($this->validate([
+            'tag' => 'required|min_length[3]|max_length[255]',
+            'type' => 'required|min_length[3]|max_length[255]',
+            'description' => 'required|min_length[3]|max_length[255]',
+            'number_seats' => 'required|integer',
+            'base_fare' => 'required|decimal',
+            'per_kilometer' => 'required|decimal'
+        ])) {
+            // Update record in the database
+            if ($vehiclesModel->update($this->request->getPost('id'), $updateData)) {
+                // Redirect or return success message
+                return redirect()->back()->with('success', 'Vehicle updated successfully.');
+            } else {
+                // Redirect or return error message
+                return redirect()->back()->with('error', 'Failed to update vehicle.');
+            }
+        } else {
+            // Redirect or return validation errors
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+    }
+    
     public function getVehiclesType($type = null)
     {   
         $vehiclesModel = new Vehicles();
@@ -122,22 +157,19 @@ class VehiclesController extends BaseController
             $vehicles = $vehiclesModel->findAll(); 
         }
     
-        // Prepare the response data
         $response = [];
         foreach ($vehicles as $vehicle) {
             $response[] = [
                 'type' => $vehicle['type'],
             ];
         }
-    
-        // Return the response as JSON
+
         return $this->response->setJSON($response);
     }
 
     public function toggleVehicle($id)
     {
-        // Load the model
-        $vehiclesModel = new Vehicles(); // Update with your actual model path
+        $vehiclesModel = new Vehicles(); 
         $bookingsModel = new Bookings();
 
         $vehicle = $vehiclesModel->find($id);
@@ -145,14 +177,11 @@ class VehiclesController extends BaseController
         if ($vehicle) {
 
             $newStatus = ($vehicle['status'] === 'enabled') ? 'disabled' : 'enabled';
-            $vehiclesModel->update($id, ['status' => $newStatus]); // update The current Status
-    
+            $vehiclesModel->update($id, ['status' => $newStatus]); 
             $bookingsModel->cancelTripsByVehicle($id);
-            exit;
+
             session()->setFlashdata('message', 'Vehicle status has been toggled successfully.');
-    
         } else {
-            // If vehicle not found, set an error message
             session()->setFlashdata('error', 'Vehicle not found.');
         }
     

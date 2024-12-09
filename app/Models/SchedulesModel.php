@@ -78,6 +78,7 @@ class SchedulesModel extends Model
     protected $skipValidation = false;
 
     
+    //Seach query for user to for all schedueled trips
     public function getScheduledTripsFiltered($fromLocation, $toLocation, $type, $date, $seats) {
         try {
             $db = \Config\Database::connect();
@@ -103,10 +104,12 @@ class SchedulesModel extends Model
                                 SELECT stop_index 
                                 FROM schedules 
                                 WHERE trip_id = t1.trip_id AND stop_name = ?
+                                LIMIT 1
                            ) + 1 AND (
                                 SELECT stop_index 
                                 FROM schedules 
                                 WHERE trip_id = t1.trip_id AND stop_name = ?
+                                LIMIT 1
                            )
                         ) AS total_distance,
                         t1.stop_index AS from_stop_index,
@@ -127,10 +130,12 @@ class SchedulesModel extends Model
                         SELECT stop_index 
                         FROM schedules 
                         WHERE trip_id = t1.trip_id AND stop_name = ?
+                        LIMIT 1
                     ) AND (
                         SELECT stop_index 
                         FROM schedules 
                         WHERE trip_id = t1.trip_id AND stop_name = ?
+                        LIMIT 1
                     ) 
                     AND t1.status = "Available"
                     AND v.type LIKE ?
@@ -157,7 +162,8 @@ class SchedulesModel extends Model
             return null;
         }
     }
-    
+
+    //Checks if curretn capacity and checks whether the requested seats will fit
     public function checkSeatAvailability($from, $to, $seats, $trip_id)
     {
         try {
@@ -203,6 +209,7 @@ class SchedulesModel extends Model
         }
     }
 
+    //Gets the max occupied eats of a given range
     public function getCurrentCapacity($from, $to, $trip_id)
     {
         try {
@@ -243,12 +250,12 @@ class SchedulesModel extends Model
         }
     }
 
+    //All available trips along with their departure and arrival time
     public function getTripsWithDepartureArrival()
     {
         try {
             $db = \Config\Database::connect();
 
-            // Run the query and get trips with departure and arrival times
             $query = $db->query('
             SELECT 
                 t1.trip_id, 
@@ -268,8 +275,6 @@ class SchedulesModel extends Model
                 departure DESC
         ');
         
-
-            // Fetch results as an array of objects or arrays
             return $query->getResultArray();
         } catch (Exception $e) {
             // Handle any exceptions
@@ -278,7 +283,8 @@ class SchedulesModel extends Model
         }
     }
 
-    public function cancelledReservation($bookingId)
+    //Minus the booking to the count
+    public function cancelReservation($bookingId)
     {
         $db = \Config\Database::connect();
         $builder = $db->table('schedules');
@@ -304,12 +310,10 @@ class SchedulesModel extends Model
             SELECT t5.stop_index 
             FROM schedules t5 
             WHERE t5.trip_id = t1.trip_id 
-            AND t5.stop_name = (SELECT bookings.to FROM bookings WHERE bookings.id = ?)-1
-        )
+            AND t5.stop_name = (SELECT bookings.to FROM bookings WHERE bookings.id = ?)
+        )-1
         ";
 
-
-        // Bind the booking ID to all placeholders
         $result = $db->query($sql, [$bookingId, $bookingId, $bookingId, $bookingId]);
 
         return $result ? true : false;
@@ -364,6 +368,7 @@ class SchedulesModel extends Model
                     schedules.stop_name AS currentStop,
                     users.name as passenger, 
                     users.phone_no,
+                    b1.id as booking_id,
                     b1.from, 
                     b1.to,
                     b1.price, 
@@ -449,5 +454,4 @@ class SchedulesModel extends Model
             return 0; // Return 0 in case of error
         }
     }
-    
 }
