@@ -11,7 +11,7 @@ use App\Models\Bookings;
 class VehiclesController extends BaseController
 {
     public function index($page = null) {
-        $page = $page ?? 1;  // Default to page 1 if not set
+        $page = $page ?? 1; 
     
         if ($this->request->getMethod() === 'POST') {
             return $this->addVehicle();
@@ -21,18 +21,18 @@ class VehiclesController extends BaseController
             
             if (!empty($search)) {
 
-                $perPage = 20;  // Define the number of routes to show per page
+                $perPage = 20; 
                 $data['vehicles'] = $vehiclesModel->like('tag',$search)->paginate($perPage, 'default', $page);
                 $data['resultCount'] = $vehiclesModel->like('tag',$search)->countAll();
                 
             } else {
-                $perPage = 20;  // Define the number of routes to show per page
+                $perPage = 20;  
                 $data['vehicles'] = $vehiclesModel->paginate($perPage, 'default', $page);            
-                $data['resultCount'] = $vehiclesModel->countAll();  // Get total routes count
+                $data['resultCount'] = $vehiclesModel->countAll(); 
             }
-            $data['pager'] = $vehiclesModel->pager;  // Get pager object
+            $data['pager'] = $vehiclesModel->pager;  
             $data['currentPage'] = $page; 
-            $data['perPage'] = $perPage;  // Pass per page value to the view
+            $data['perPage'] = $perPage; 
         }
     
         return view('admin/vehicles', $data);
@@ -51,7 +51,6 @@ class VehiclesController extends BaseController
             'status'=>"enabled"
         ];
 
-        // Validate data (optional)
         if ($this->validate([
             'tag' => 'required|min_length[3]|max_length[255]',
             'type' => 'required|min_length[3]|max_length[255]',
@@ -61,14 +60,11 @@ class VehiclesController extends BaseController
             'per_kilometer' => 'required|decimal'
         ])) {
             if ($vehiclesModel->insert($insert)) {
-                // Redirect or return success message
                 return redirect()->back()->with('success', 'Vehicle added successfully.');
             } else {
-                // Redirect or return error message
                 return redirect()->back()->with('error', 'Failed to add vehicle.');
             }
         } else {
-            // Redirect or return validation errors
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
     }
@@ -84,7 +80,6 @@ class VehiclesController extends BaseController
                 $vehicles = $vehiclesModel->findAll(); 
             }
         
-            // Prepare the response data
             $response = [];
             
             foreach ($vehicles as $vehicle) {
@@ -94,7 +89,6 @@ class VehiclesController extends BaseController
                 ];
             }
         
-            // Return the response as JSON
             return $this->response->setJSON($response);
     
         } catch (\Exception $e) {
@@ -110,7 +104,6 @@ class VehiclesController extends BaseController
     {
         $vehiclesModel = new Vehicles();
     
-        // Prepare data to update
         $updateData = [
             'tag' => $this->request->getPost('tag'),
             'type' => $this->request->getPost('type'),
@@ -120,7 +113,6 @@ class VehiclesController extends BaseController
             'per_kilometer' => $this->request->getPost('per_kilometer'),
         ];
     
-        // Validate data
         if ($this->validate([
             'tag' => 'required|min_length[3]|max_length[255]',
             'type' => 'required|min_length[3]|max_length[255]',
@@ -129,16 +121,12 @@ class VehiclesController extends BaseController
             'base_fare' => 'required|decimal',
             'per_kilometer' => 'required|decimal'
         ])) {
-            // Update record in the database
             if ($vehiclesModel->update($this->request->getPost('id'), $updateData)) {
-                // Redirect or return success message
                 return redirect()->back()->with('success', 'Vehicle updated successfully.');
             } else {
-                // Redirect or return error message
                 return redirect()->back()->with('error', 'Failed to update vehicle.');
             }
         } else {
-            // Redirect or return validation errors
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
     }

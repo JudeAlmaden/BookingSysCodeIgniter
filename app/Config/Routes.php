@@ -41,7 +41,7 @@ $routes->get('dashboard/cancel-booking/(:num)', 'BookingController::cancelBookin
 
 
 //Payments
-$routes->get('dashboard/payment/view/(:num)', 'PaymentController::viewPaymentAdmin/$1', ['filter' => 'isAdmin']);
+$routes->get('dashboard/payment/view/(:num)', 'PaymentController::viewPayment/$1', ['filter' => 'isAdmin']);
 $routes->post('payment/approve/(:num)', 'PaymentController::approve/$1', ['filter' => 'isAdmin']);
 $routes->post('payment/reject/(:num)', 'PaymentController::reject/$1', ['filter' => 'isAdmin']);
 
@@ -65,8 +65,8 @@ $routes->get('/logout', 'User::logout'); // User logout
 
 // --- User Booking Routes ---
 $routes->match(['get', 'post'], 'homepage', 'BookingController::index', ['filter' => 'auth']); // Booking homepage (authenticated)
-$routes->match(['get', 'post'], 'homepage/bookings', 'BookingController::bookingsUser', ['filter' => 'auth']); // User's booking page
-$routes->match(['get', 'post'], 'payment/checkout/(:num)', 'PaymentController::paymentUser/$1', ['filter' => 'auth']); // User Payment
+$routes->match(['get', 'post'], 'homepage/bookings', 'BookingController::bookingsUser', ['filter' => 'auth']); 
+$routes->match(['get', 'post'], 'payment/checkout/(:num)', 'PaymentController::paymentUser/$1', ['filter' => 'auth']); 
 $routes->match(['get', 'post'], 'payment/processPayment/(:num)', 'PaymentController::processPayment/$1', ['filter' => 'auth']);//Send payment proof
 $routes->get('payment/view/(:num)', 'PaymentController::viewPayment/$1', ['filter' => 'auth']);
 $routes->get('payment/downloadProof/(:num)', 'PaymentController::downloadProof/$1');

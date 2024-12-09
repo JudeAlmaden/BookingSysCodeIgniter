@@ -85,10 +85,8 @@ class User extends BaseController
             } else {
                 $model = new UserModel();
 
-                // Count the total number of records in the table
                 $totalRecords = $model->countAll();
                 
-                // Prepare the base data
                 $newData = [
                     'name' => $this->request->getVar('name'),
                     'phone_no' => $this->request->getVar('phone_no'),
@@ -96,7 +94,6 @@ class User extends BaseController
                     'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
                 ];
                 
-                // Add privilege if there are existing records
                 if ($totalRecords == 0) {
                     $newData['privilege'] = "Admin";
                     $message = 'Successful Registration of admin account';
@@ -105,10 +102,8 @@ class User extends BaseController
                     $message = 'Successful Registration';
                 }
                 
-                // Save the data
                 $model->save($newData);
                 
-                // Set success message and redirect
                 $session = session();
                 $session->setFlashdata('success',  $message );
                 return redirect()->to(base_url(''));
@@ -131,8 +126,5 @@ class User extends BaseController
     {
         session()->destroy();
         return redirect()->to('login');
-    }
-
-
-    
+    }    
 }

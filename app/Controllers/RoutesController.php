@@ -9,37 +9,31 @@ use App\Models\RouteStops;
 
 class RoutesController extends BaseController
 {
-
     public function index($page = null) {
-        $page = $page ?? 1;  // Default to page 1 if not set
+        $page = $page ?? 1;  
     
-        // Check if it's a POST request for route creation
         if ($this->request->getMethod() === 'POST') {
-            return $this->createRoute();  // Handle route creation
+            return $this->createRoute(); 
         } else {
             $routesModel = new Routes();
-    
-            // Get the search query if it's set, otherwise default to an empty string
             $search = $this->request->getGet('search') ?? '';
     
-            // Define the number of routes to show per page
             $perPage = 20;
     
-            // If search term exists, filter the routes by name
             if (!empty($search)) {
-                $data['routes'] = $routesModel->like('name', $search)  // Search for routes where name is like the search term
+                $data['routes'] = $routesModel->like('name', $search)  
                                               ->paginate($perPage, 'default', $page);
-                $data['resultCount'] = $routesModel->like('name', $search)->countAll();  // Get total routes count after filtering
+                $data['resultCount'] = $routesModel->like('name', $search)->countAll(); 
             } else {
-                // If no search term, return all routes
+
                 $data['routes'] = $routesModel->paginate($perPage, 'default', $page);
-                $data['resultCount'] = $routesModel->countAll();  // Get total routes count without filtering
+                $data['resultCount'] = $routesModel->countAll();  
             }
     
-            $data['pager'] = $routesModel->pager;  // Get pager object
+            $data['pager'] = $routesModel->pager;  
             $data['currentPage'] = $page; 
-            $data['perPage'] = $perPage;  // Pass per page value to the view
-            $data['search'] = $search;  // Pass the search term to the view (optional, for pre-filling the search bar)
+            $data['perPage'] = $perPage;  
+            $data['search'] = $search;  
         }
     
         return view('admin/routes', $data);
@@ -63,19 +57,12 @@ class RoutesController extends BaseController
 
     public function deleteRoute($id)
     {
-        // Check if the request method is POST
         if ($this->request->getMethod() == 'POST') {
-            // Load the models
             $routesModel = new Routes();
             $routeStopsModel = new RouteStops();
-    
-            // First, delete all stops associated with the route
             $routeStopsModel->where('route_id', $id)->delete();
-    
-            // Then, delete the route itself
             $routesModel->delete($id);
     
-            // Optionally set a success message
             session()->setFlashdata('success', 'Route and its stops have been deleted successfully.');
         }
     
@@ -86,16 +73,12 @@ class RoutesController extends BaseController
     
     public function createRoute(){
 
-        $data = [];
-
         if ($this->request->getMethod() == 'POST') {
-            // Define validation rules
             $rules = [
                 'routeName' => 'required|max_length[50]|string',
                 'initial' => 'required|max_length[50]|string',
             ];
     
-            // Define custom error messages
             $errors = [
                 'routeName' => [
                     'required' => 'Route name is required.',
@@ -107,7 +90,6 @@ class RoutesController extends BaseController
                 ],
             ];
 
-            //Initial Validation 
             if (!$this->validate($rules, $errors)) {
                 session()->setFlashdata('errors', $this->validator);
                 return redirect()->back();
@@ -116,8 +98,6 @@ class RoutesController extends BaseController
             //Validate arrays
             $stations = $_POST['stations'];
             $distances = $_POST['distance'];
-
-            // Initialize an array to store custom validation errors
             $customErrors = [];
 
             // Check if stations and distances are arrays with the proper count
@@ -161,13 +141,12 @@ class RoutesController extends BaseController
             $routesModel->save($newRoute);
             $routeID = $routesModel->insertID();
 
-
             // Insert related route stops
             $routeStopsModel = new RouteStops();
             $routeStopsData = [];
             $stationIndex = 1; 
 
-            //First element
+            //First element has an index and distance of 0 ALWAYS
             $initial = [
                 'route_id' => $routeID,
                 'name' => $_POST['initial'], 
@@ -194,45 +173,42 @@ class RoutesController extends BaseController
         return redirect()->to('dashboard/routes/1');
     }
 
+    //Search routes by name
     public function getRoutes($name = null)
     {   
         $routesModel = new Routes();
     
-        // If a name parameter is provided, filter the routes and limit results
         if ($name) {
             $routes = $routesModel->like('name', $name)
-                ->groupBy('name')  // Ensure unique names
-                ->limit(5)          // Limit to 5 unique names
+                ->groupBy('name') 
+                ->limit(5)      
                 ->findAll();
         } else {
-            $routes = $routesModel->findAll(); // Fetch all routes if no name parameter is provided
+            $routes = $routesModel->findAll(); 
         }
         
-        // Prepare the response data
         $response = [];
         foreach ($routes as $route) {
             $response[] = [
-                'id' => $route['id'], // Adjust according to your database schema
+                'id' => $route['id'], 
                 'name' => $route['name'],
             ];
         }
     
-        // Return the response as JSON
         return $this->response->setJSON($response);
     }
 
+    //gets stops of a route
     public function getStops($id = null)
     {   
         $routeStopsModel = new RouteStops();
     
-        // If a name parameter is provided, filter the routes and limit results
         if ($id) {
-            $stops = $routeStopsModel->like('route_id', $id)->orderBy('index', 'ASC')->findAll(); // Select up to 5 routes with names containing the search term
+            $stops = $routeStopsModel->like('route_id', $id)->orderBy('index', 'ASC')->findAll(); 
         } else {
-            $stops = $routeStopsModel->findAll(); // Fetch all routes if no name parameter is provided
+            $stops = $routeStopsModel->findAll();
         }
     
-        // Prepare the response data
         $response = [];
         foreach ($stops as $stop) {
             $response[] = [
@@ -241,23 +217,20 @@ class RoutesController extends BaseController
                 'distance' => $stop['distance'],
             ];
         }
-    
-        // Return the response as JSON
         return $this->response->setJSON($response);
     }
 
+    //Searches a stp by name
     public function searchStop($str = null){
 
         $routeStopsModel = new RouteStops();
     
-        // If a name parameter is provided, filter the routes and limit results
         if ($str) {
-            $stops = $routeStopsModel->like('name', $str)->orderBy('index', 'ASC')->groupBy('name')->findAll(); // Select up to 5 routes with names containing the search term
+            $stops = $routeStopsModel->like('name', $str)->orderBy('index', 'ASC')->groupBy('name')->findAll(); 
         } else {
-            $stops = $routeStopsModel->findAll(); // Fetch all routes if no name parameter is provided
+            $stops = $routeStopsModel->findAll(); 
         }
 
-        // Prepare the response data
         $response = [];
         foreach ($stops as $stop) {
             $response[] = [
@@ -266,6 +239,5 @@ class RoutesController extends BaseController
             ];
         }
         return $this->response->setJSON($response);
-
     }
 }

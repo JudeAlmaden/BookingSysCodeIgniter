@@ -10,44 +10,37 @@ class PaymentController extends BaseController
 {
     public function index($page = null)
     {
-        $page = $page ?? 1;  // Default to page 1 if not set
-        $paymentsModel = new PaymentsModel(); // Model for payments
+        $page = $page ?? 1;
+        $paymentsModel = new PaymentsModel(); 
         $perPage = 20;
     
-        // Fetch payments with booking details, focusing only on payments
         $payments = $paymentsModel->select('payments.*, bookings.id as booking_id, bookings.status as booking_status')
-            ->join('bookings', 'bookings.id = payments.booking_id', 'left')  // Left join to include payments even if no related booking
-            ->where('payments.status', 'Pending')  // Filter by pending payment status
-            ->paginate($perPage, 'default', $page);  // Paginate results
+            ->join('bookings', 'bookings.id = payments.booking_id', 'left') 
+            ->where('payments.status', 'Pending')  
+            ->paginate($perPage, 'default', $page);  
     
-        // Additional data for pagination
-        $data['payments'] = $payments;  // Store the fetched payments
-        $data['pager'] = $paymentsModel->pager;  // Paginate links using the payments model
+        $data['payments'] = $payments;  
+        $data['pager'] = $paymentsModel->pager; 
         $data['currentPage'] = $page;
-        $data['resultCount'] = $paymentsModel->where('status', 'Pending')->countAllResults(); // Count pending payments
+        $data['resultCount'] = $paymentsModel->where('status', 'Pending')->countAllResults(); 
         $data['perPage'] = $perPage;
     
-        // Return the view with the data
         return view('admin/paymentRequest', $data);
     }
     
-    //Send a payment request
+    //Send a payment request (User)
     public function processPayment($bookingId)
     {
-        // Load the models
         $bookingModel = new Bookings();
         $paymentModel = new PaymentsModel();
         
-        // Get the booking details
         $booking = $bookingModel->find($bookingId);
         
         if (!$booking) {
-            // If booking not found, redirect with an error message
             session()->setFlashdata('error', 'Booking not found!');
             return redirect()->to('/bookings');
         }
         
-        // Check if the booking is approved
         if ($booking['status'] !== 'Approved') {
             // If not approved, show an error message
             session()->setFlashdata('error', 'Booking is not approved for payment.');
@@ -56,17 +49,12 @@ class PaymentController extends BaseController
     
         // Get form data
         $transactionId = $this->request->getPost('transaction_id');
-        
-        // Handle file upload for payment proof
         $paymentProof = $this->request->getFile('payment_proof');
         
         if ($paymentProof->isValid() && !$paymentProof->hasMoved()) {
-            // Read the file contents (binary data)
             $fileData = file_get_contents($paymentProof->getTempName()); // Read the file as binary
             
-            // If the file data is successfully read, save it to the database
             if ($fileData !== false) {
-                // Corrected payment data to include booking_id and binary file data for payment proof
                 $paymentData = [
                     'user_id' => session()->get('id'),
                     'booking_id' => $booking['id'],
@@ -78,59 +66,47 @@ class PaymentController extends BaseController
                     'updated_at' => date('Y-m-d H:i:s'),
                 ];
     
-                // Save the payment data to the database
                 try {
                     $paymentModel->save($paymentData);
-                    // Set a success message
                     session()->setFlashdata('success', 'Your payment request has been submitted for approval.');
+
                 } catch (\Exception $e) {
                     // Log error if insertion fails
                     log_message('error', 'Error saving payment: ' . $e->getMessage());
                     session()->setFlashdata('error', 'There was an error submitting your payment.');
                 }
             } else {
-                // If reading the file failed, handle the error
                 session()->setFlashdata('error', 'Error reading the payment proof file.');
-                return redirect()->to(base_url('payment/checkout/' . $bookingId)); // Redirect back to payment page
+                return redirect()->to(base_url('payment/checkout/' . $bookingId));
+
             }
         } else {
-            // If no valid file, handle the error
             session()->setFlashdata('error', 'Invalid payment proof file.');
-            return redirect()->to(base_url('payment/checkout/' . $bookingId)); // Redirect back to payment page
+            return redirect()->to(base_url('payment/checkout/' . $bookingId)); 
         }
-    
-        // Redirect to the bookings page or payment confirmation page
         return redirect()->to(base_url('homepage/bookings'));
     }
     
-    //Called in the payment process to upload a file of payment proof
     public function uploadProof($paymentId)
     {
-        $validation =  \Config\Services::validation();
         $file = $this->request->getFile('payment_proof');
 
-        // Validate the file
         if (!$file->isValid()) {
             return redirect()->back()->with('error', 'Invalid file upload');
         }
 
-        // Get the file content
         $fileContent = file_get_contents($file->getTempName());
-
-        // Update the payment record with the file content
         $paymentModel = new PaymentsModel();
         $paymentModel->update($paymentId, ['payment_proof' => $fileContent]);
 
         return redirect()->to('/payments/view/' . $paymentId)->with('success', 'Proof of payment uploaded');
     }
 
+    //To view a payment data for user, 
     public function paymentUser($bookingId)
     {
-        // Load the Bookings model
         $bookingsModel = new Bookings();
         $paymentsModel = new PaymentsModel();
-
-        // Fetch booking details based on booking ID
         $booking = $bookingsModel->find($bookingId);
 
         if (!$booking) {
@@ -139,83 +115,60 @@ class PaymentController extends BaseController
             return redirect()->to(base_url('/bookings'));
         }
 
-        // Check if the user is the one who made the booking
         $userId = session()->get('id');
         if ($booking['user_id'] !== $userId) {
-            // If the booking does not belong to the logged-in user, redirect with an error
             session()->setFlashdata('error', 'You do not have permission to access this payment page.');
             return redirect()->to('/bookings');
         }
 
-        // Check if the booking is approved and not yet paid
         if ($booking['status'] !== 'Approved') {
             session()->setFlashdata('error', 'Only approved bookings can be paid.');
             return redirect()->to('/bookings');
         }
 
-        // Get the existing payment status
         $payment = $paymentsModel->where('booking_id', $bookingId)->first();
 
-        // Pass data to view (booking details and payment information)
         return view('customer/payment', [
             'booking' => $booking,
             'payment' => $payment
         ]);
     }
 
-    
+
+    //View payment data; for admin it includes controls
     public function viewPayment($bookingId)
     {
-        // Load the necessary models
         $bookingModel = new Bookings();
         $paymentModel = new PaymentsModel();
-
-        // Get the booking and payment details
+    
         $booking = $bookingModel->find($bookingId);
         $payment = $paymentModel->where('booking_id', $bookingId)->first();
-
+    
         // Check if the booking exists
         if (!$booking) {
             session()->setFlashdata('error', 'Booking not found!');
             return redirect()->to('/bookings');
         }
-
-        // Pass data to the view
-        return view('customer/viewPayment', [
-            'booking' => $booking,
-            'payment' => $payment,
-        ]);
-    }
-
-    public function viewPaymentAdmin($bookingId)
-    {
-        // Load the necessary models
-        $bookingModel = new Bookings();
-        $paymentModel = new PaymentsModel();
-
-        // Get the booking and payment details
-        $booking = $bookingModel->find($bookingId);
-        $payment = $paymentModel->where('booking_id', $bookingId)->first();
-
-        // Check if the booking exists
-        if (!$booking) {
-            session()->setFlashdata('error', 'Booking not found!');
-            return redirect()->to(base_url("dashboard"));
-        }
-
-        // Pass data to the view
-        return view('admin/viewPayment', [
-            'booking' => $booking,
-            'payment' => $payment,
-        ]);
+    
+        // Get the user's privilege from session
+        $privilege = session()->get('privilege');
+ 
+        if ($privilege === 'Admin') {
+            return view('admin/viewPayment', [
+                'booking' => $booking,
+                'payment' => $payment,
+            ]);
+        } else  {
+            return view('customer/viewPayment', [
+                'booking' => $booking,
+                'payment' => $payment,
+            ]);
+        } 
     }
 
     public function downloadProof($paymentId)
     {
-        // Load the payment model
         $paymentModel = new PaymentsModel();
-
-        // Get the payment details
         $payment = $paymentModel->find($paymentId);
 
         // Check if the payment exists and has a proof
@@ -241,10 +194,8 @@ class PaymentController extends BaseController
             return redirect()->to(base_url('/dashboard'));
         }
 
-        // Update payment status to 'Approved'
         $paymentModel->update($paymentId, ['status' => 'Approved']);
         
-        // Optionally, update the booking status to 'Confirmed' or similar
         $bookingModel = new Bookings();
         $bookingModel->update($payment['booking_id'], ['status' => 'Confirmed']);
         
@@ -287,24 +238,22 @@ class PaymentController extends BaseController
     //View for refund index
     public function refund($page = null)
     {
-        $page = $page ?? 1;  // Default to page 1 if not set
-        $paymentsModel = new PaymentsModel(); // Model for payments
+        $page = $page ?? 1; 
+        $paymentsModel = new PaymentsModel();
         $perPage = 20;
     
-        // Fetch payments with booking details, focusing only on payments
         $payments = $paymentsModel->select('payments.*, bookings.id as booking_id, bookings.status as booking_status')
-            ->join('bookings', 'bookings.id = payments.booking_id', 'left')  // Left join to include payments even if no related booking
-            ->where('payments.status', 'Waiting for Refund')  // Filter by pending payment status
-            ->paginate($perPage, 'default', $page);  // Paginate results
+            ->join('bookings', 'bookings.id = payments.booking_id', 'left') 
+            ->where('payments.status', 'Waiting for Refund') 
+            ->paginate($perPage, 'default', $page); 
     
         // Additional data for pagination
-        $data['payments'] = $payments;  // Store the fetched payments
-        $data['pager'] = $paymentsModel->pager;  // Paginate links using the payments model
+        $data['payments'] = $payments; 
+        $data['pager'] = $paymentsModel->pager;  
         $data['currentPage'] = $page;
-        $data['resultCount'] = $paymentsModel->where('status', 'Pending')->countAllResults(); // Count pending payments
+        $data['resultCount'] = $paymentsModel->where('status', 'Pending')->countAllResults(); 
         $data['perPage'] = $perPage;
     
-        // Return the view with the data
         return view('admin/refunds', $data);
     }
 

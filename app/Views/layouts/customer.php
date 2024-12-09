@@ -62,7 +62,7 @@
                 <a class="nav-link" href="<?= base_url('homepage/bookings') ?>">Bookings & Payments</a>
             </li>
             <li class="nav-item m-auto me-5">  
-              <a class="nav-link" href="#">Logout</a>
+              <a class="nav-link" href="/logout">Logout</a>
             </li>
         </ul>
     </div>

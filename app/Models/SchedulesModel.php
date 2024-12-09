@@ -73,10 +73,9 @@ class SchedulesModel extends Model
             'integer'  => 'Distance must be an integer.'
         ]
     ];
-
-    // Disable automatic validation for mass assignments (optional)
     protected $skipValidation = false;
 
+    
     
     //Seach query for user to for all schedueled trips
     public function getScheduledTripsFiltered($fromLocation, $toLocation, $type, $date, $seats) {
@@ -209,7 +208,7 @@ class SchedulesModel extends Model
         }
     }
 
-    //Gets the max occupied eats of a given range
+    //Gets the max occupied eats of a given range of a trip
     public function getCurrentCapacity($from, $to, $trip_id)
     {
         try {
