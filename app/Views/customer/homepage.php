@@ -399,6 +399,7 @@
 
           //Clear values
           $('#suggestionsToLocation').empty(); 
+          
           if (query.length > 0 && !isQuerying) {
 
             let url = `<?= site_url("stops/search/") ?>${encodeURIComponent(query)}`;

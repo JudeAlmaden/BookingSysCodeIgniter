@@ -272,7 +272,7 @@ class PaymentController extends BaseController
         // Call the cancelledReservation function to adjust reservations
         $bookingId = $payment['booking_id'];
         $schedulesModel = new SchedulesModel(); // Assuming the `cancelledReservation` function is in this model
-        $reservationUpdated = $schedulesModel->cancelledReservation($bookingId);
+        $reservationUpdated = $schedulesModel->cancelReservation($bookingId);
     
         // Handle the result of the cancellation
         if ($reservationUpdated) {

@@ -283,35 +283,35 @@ class SchedulesModel extends Model
         }
     }
 
-    //Minus the booking to the count
+    //Minus the number of booked seats to current reserved seats
     public function cancelReservation($bookingId)
     {
         $db = \Config\Database::connect();
         $builder = $db->table('schedules');
 
         $sql = "
-        UPDATE schedules t1
-        SET t1.reservations = t1.reservations - (
-            SELECT bookings.num_seats
-            FROM bookings
-            WHERE bookings.id = ?
-        )
-        WHERE t1.trip_id IN (
-            SELECT bookings.trip_id
-            FROM bookings
-            WHERE bookings.id = ?
-        )
-        AND t1.stop_index BETWEEN (
-            SELECT t4.stop_index 
-            FROM schedules t4 
-            WHERE t4.trip_id = t1.trip_id 
-            AND t4.stop_name = (SELECT bookings.from FROM bookings WHERE bookings.id = ?)
-        ) AND (
-            SELECT t5.stop_index 
-            FROM schedules t5 
-            WHERE t5.trip_id = t1.trip_id 
-            AND t5.stop_name = (SELECT bookings.to FROM bookings WHERE bookings.id = ?)
-        )-1
+            UPDATE schedules t1
+            SET t1.reservations = t1.reservations - (
+                SELECT bookings.num_seats
+                FROM bookings
+                WHERE bookings.id = ?
+            )
+            WHERE t1.trip_id IN (
+                SELECT bookings.trip_id
+                FROM bookings
+                WHERE bookings.id = ?
+            )
+            AND t1.stop_index BETWEEN (
+                SELECT t4.stop_index 
+                FROM schedules t4 
+                WHERE t4.trip_id = t1.trip_id 
+                AND t4.stop_name = (SELECT bookings.from FROM bookings WHERE bookings.id = ?)
+            ) AND (
+                SELECT t5.stop_index 
+                FROM schedules t5 
+                WHERE t5.trip_id = t1.trip_id 
+                AND t5.stop_name = (SELECT bookings.to FROM bookings WHERE bookings.id = ?)
+            )-1
         ";
 
         $result = $db->query($sql, [$bookingId, $bookingId, $bookingId, $bookingId]);
@@ -319,6 +319,7 @@ class SchedulesModel extends Model
         return $result ? true : false;
     }
 
+    //Add the number of booked seats to current reserved seats
     public function approveReservation($bookingId)
     {
     $db = \Config\Database::connect();
@@ -356,6 +357,7 @@ class SchedulesModel extends Model
     return $result ? true : false;
     }
 
+    //Get The list of passengers for each stop the number of booked seats to current reserved seats
     public function getPassengersFromStop($id)
     {
         try {
