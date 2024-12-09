@@ -17,7 +17,6 @@
     <div class="content">
         <?= $this->renderSection('body') ?>
     </div>
-
     <div
     class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-dark">
     <!-- Copyright -->
@@ -25,5 +24,6 @@
       Copyright © 2024. All rights reserved.
     </div>
     <!-- Copyright -->
+    </div>
 </body>
 </html>

@@ -99,8 +99,10 @@ class User extends BaseController
                 // Add privilege if there are existing records
                 if ($totalRecords == 0) {
                     $newData['privilege'] = "Admin";
+                    $message = 'Successful Registration of admin account';
                 }else{
                     $newData['privilege'] = "User";
+                    $message = 'Successful Registration';
                 }
                 
                 // Save the data
@@ -108,7 +110,7 @@ class User extends BaseController
                 
                 // Set success message and redirect
                 $session = session();
-                $session->setFlashdata('success', 'Successful Registration');
+                $session->setFlashdata('success',  $message );
                 return redirect()->to(base_url(''));
             }
         }else{

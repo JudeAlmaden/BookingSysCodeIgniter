@@ -127,8 +127,20 @@ class Bookings extends Model
         return $db->query($reservationUpdateQuery, [$numSeats, $bookingId]);
     }
 
-
+    public function getBooking($bookingId)
+    {
+        // Update the reservations for the schedule
+        $db = \Config\Database::connect();
+        $getBookingQuery = "
+            SELECT * FROM bookings WHERE id = ?
+        ";
+        $query = $db->query($getBookingQuery, [$bookingId]);
+        
+        // Return the first row of the result
+        return $query->getRow();
+    }
     
+
     public function cancelTripsByVehicle($vehicleId)
     {
         $db = \Config\Database::connect();

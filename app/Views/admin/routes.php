@@ -63,7 +63,6 @@
     </div>
   </div>
 </div>
-
 <div class="container">
   <div class="row align-items-center">
     <div class="col">
@@ -75,8 +74,21 @@
       </button>
     </div>
   </div>
-</div>
 
+  <!-- Search Bar -->
+  <div class="row mt-3">
+    <div class="col-12">
+      <form action="" method="GET">
+        <div class="form-group d-flex align-items-center">
+          <input type="text" class="form-control" id="search" name="search" placeholder="Search for a route..." required>
+          <button type="submit" class="btn btn-primary ms-2">
+            <i class="bi bi-search"></i> Search
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <hr>
 
@@ -123,7 +135,7 @@
           </li>
 
           <?php
-          $totalPages = ceil($totalRoutes / $perPage);
+          $totalPages = ceil($resultCount / $perPage);
           for ($i = 1; $i <= $totalPages; $i++): ?>
               <li class="page-item <?= ($currentPage == $i) ? 'active' : '' ?>">
                   <a class="page-link" href="<?= site_url("dashboard/routes/$i") ?>"><?= $i ?></a>

@@ -17,12 +17,21 @@ class VehiclesController extends BaseController
             return $this->addVehicle();
         } else {
             $vehiclesModel = new Vehicles();
-    
-            $perPage = 20;  // Define the number of routes to show per page
-            $data['vehicles'] = $vehiclesModel->paginate($perPage, 'default', $page);
+            $search = $this->request->getGet('search') ?? '';
+            
+            if (!empty($search)) {
+
+                $perPage = 20;  // Define the number of routes to show per page
+                $data['vehicles'] = $vehiclesModel->like('tag',$search)->paginate($perPage, 'default', $page);
+                $data['resultCount'] = $vehiclesModel->like('tag',$search)->countAll();
+                
+            } else {
+                $perPage = 20;  // Define the number of routes to show per page
+                $data['vehicles'] = $vehiclesModel->paginate($perPage, 'default', $page);            
+                $data['resultCount'] = $vehiclesModel->countAll();  // Get total routes count
+            }
             $data['pager'] = $vehiclesModel->pager;  // Get pager object
             $data['currentPage'] = $page; 
-            $data['totalRoutes'] = $vehiclesModel->countAll();  // Get total routes count
             $data['perPage'] = $perPage;  // Pass per page value to the view
         }
     
@@ -38,7 +47,8 @@ class VehiclesController extends BaseController
             'description' => $this->request->getPost('description'),
             'number_seats' => $this->request->getPost('number_seats'),
             'base_fare' => $this->request->getPost('base_fare'),
-            'per_kilometer' => $this->request->getPost('per_kilometer')
+            'per_kilometer' => $this->request->getPost('per_kilometer'),
+            'status'=>"enabled"
         ];
 
         // Validate data (optional)
@@ -65,8 +75,6 @@ class VehiclesController extends BaseController
 
     public function getVehicles($tag = null)
     {   
-        $vehiclesModel = new Vehicles(); // Make sure the namespace is correct
-    
         try {
             $vehiclesModel = new Vehicles();
     
@@ -78,6 +86,7 @@ class VehiclesController extends BaseController
         
             // Prepare the response data
             $response = [];
+            
             foreach ($vehicles as $vehicle) {
                 $response[] = [
                     'id' => $vehicle['id'], // Adjust according to your database schema

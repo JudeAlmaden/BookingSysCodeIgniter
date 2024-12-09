@@ -27,21 +27,23 @@
         -10px -10px 10px rgba(0,0,0,0.1) !important;
     }
 
+    #title{
+      background: linear-gradient(to right, #12c2e9, #c471ed, #f64f59);
+      background-clip: text;
+      color:transparent
+    }
 </style>
 
 
-<section class="vh-100" style="background-color:#f9f9f9 !important">
-  <div class="container py-5 h-100">
+<section  style="background-color:#f9f9f9 !important">
+  <div class="container py-5">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-12 col-md-8 col-lg-6 col-xl-5">
         <div class="card bg-dark text-white" style="border-radius: 1rem;">
           <div class="card-body p-5 text-center shadow">
-            <div class="mb-md-5 mt-md-4 pb-5">        
-            <div class="logo">
-                <img src="https://www.freepnglogos.com/uploads/logo-chatgpt-png/chatgpt-brand-logo-transparent.png" alt="LogoLangz">
-            </div>
+            <div class="mb-md-5 mt-md-4 pb-5">       
 
-            <div class="panel-heading h2">Register</div>
+            <div class="panel-heading h2" id="title">Register</div>
             <p class="text-white-50 pb-3">Setup your account and start booking!</p>
             <div class="panel-body">
 
@@ -70,7 +72,7 @@
                         <input type="password" class="form-control" name="password_confirm" id="password_confirm">
                         <label for="password_confirm">Confirm Password</label>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100 my-3 "><h4>Submit</h4></button>
+                    <button type="submit" class="btn btn-primary w-75 my-3 "><h5>Register</h></button>
                 </form>
             </div>
 

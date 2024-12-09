@@ -19,7 +19,7 @@ class ScheduleController extends BaseController
         $data["schedules"] = $scheduleModel->getTripsWithDepartureArrival();
         $data['pager'] = $scheduleModel->pager;  // Get pager object
         $data['currentPage'] = $page; 
-        $data['totalRoutes'] = $scheduleModel->countAll();  // Get total routes count
+        $data['resultCount'] = $scheduleModel->countAll();  // Get total routes count
         $data['perPage'] = $perPage;  // Pass per page value to the view
 
         return view ('admin/schedules/list', $data);
@@ -136,15 +136,14 @@ class ScheduleController extends BaseController
         // Query to check for any overlapping schedules
         $rs = $scheduleModel
         ->where('vehicle_id', $vehicle_id)
-        ->where('status', 'Available') // Corrected typo in 'available'
+        ->where('status', 'Available') 
         ->groupStart()
-            // New schedule starts before existing ends and ends after existing starts
-            ->where('eta <', $end) // New schedule starts before existing schedule ends
-            ->where('eta >', $start) // New schedule ends after existing schedule starts
+            ->where('eta <', $end) 
+            ->where('eta >', $start) 
         ->groupEnd()
         ->findAll();
     
-        return count($rs) > 0; // If there are any results, there is an overlap
+        return count($rs) > 0; 
     }
 
     function generateUniqueID() {    

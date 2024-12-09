@@ -206,8 +206,8 @@ class BookingController extends BaseController
         // Load the view and pass the bookings data
         return view('customer/bookings', $data);
     }
-    
 
+    //Index Page to view bookings
     public function bookingsAdmin($page = null)
     {
         $page = $page ?? 1;  // Default to page 1 if not set
@@ -242,35 +242,32 @@ class BookingController extends BaseController
         // Pager and additional data
         $data['pager'] = $bookingsModel->pager;
         $data['currentPage'] = $page;
-        $data['totalBookings'] = $bookingsModel->where('status', 'Pending')->countAllResults();  // Count pending bookings
+        $data['resultCount'] = $bookingsModel->where('status', 'Pending')->countAllResults();  // Count pending bookings
         $data['perPage'] = $perPage;  
     
         // Load the view and pass the data
         return view('admin/bookings', $data);
     }
     
-
-
     public function approve($bookingId)
     {
         $bookingModel = new Bookings();
-        $vehiclesModel = new Vehicles();
         $schedulesModel = new SchedulesModel();
     
         // First, check if there are enough available seats
         try {
             // Get the vehicle seat count
-            $seatResult = $vehiclesModel->getVehicleSeatCountByBookingId($bookingId);
-    
-            if ($seatResult) {
+            $booking = $bookingModel->getBooking($bookingId);
+
+            if ($booking) {
                 // Get the current reservation count for the trip
-                $reservationResult = $schedulesModel->getReservationCountByBookingId($bookingId);
-    
+                $seatCount = $schedulesModel->getCurrentCapacity($booking->from,$booking->to, $booking->trip_id );
+
                 // Calculate total reservations (existing + new booking)
-                $totalReservations = $reservationResult->reservations + $bookingModel->find($bookingId)['num_seats'];
+                $totalReservations = $seatCount->reservations + $bookingModel->find($bookingId)['num_seats'];
     
                 // Check if total reservations exceed vehicle seat capacity
-                if ($totalReservations <= $seatResult->number_seats) {
+                if ($totalReservations <= $seatCount->number_seats) {
                     // Update the booking status to 'Approved' and add seats to the schedule
                     $bookingModel->update($bookingId, ['status' => 'Approved']);
                     $schedulesModel->approveReservation($bookingId, $bookingModel->find($bookingId)['num_seats']);

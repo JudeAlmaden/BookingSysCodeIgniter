@@ -94,7 +94,7 @@
             <!-- Pagination Links -->
             <div class="d-flex justify-content-between">
                 <div>
-                    <span>Showing <?= ($currentPage - 1) * $perPage + 1 ?> to <?= min($currentPage * $perPage, $totalPayments) ?> of <?= $totalPayments ?> payments</span>
+                    <span>Showing <?= ($currentPage - 1) * $perPage + 1 ?> to <?= min($currentPage * $perPage, $resultCount) ?> of <?= $resultCount ?> payments</span>
                 </div>
                 <div>
                     <?= $pager->links() ?>

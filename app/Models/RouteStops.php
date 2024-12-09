@@ -12,7 +12,7 @@ class RouteStops extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['route','name','distance','index'];
+    protected $allowedFields    = ['route_id','name','distance','index'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

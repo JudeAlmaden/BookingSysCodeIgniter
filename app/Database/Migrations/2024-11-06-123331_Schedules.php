@@ -12,18 +12,15 @@ class Schedules extends Migration
             'id' => [
                 'type'           => 'INT',
                 'constraint'     => 11,
-                'unsigned'       => true,
                 'auto_increment' => true,
             ],
             'vehicle_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
-                'unsigned'   => true,
             ],
             'trip_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
-                'unsigned'   => true,
             ],
             'ETA' => [
                 'type' => 'DATETIME',
@@ -32,31 +29,28 @@ class Schedules extends Migration
             'stop_index' => [  
                 'type'       => 'INT',
                 'constraint' => 11,
-                'unsigned'   => true,
             ],
             'reservations' => [  
                 'type'       => 'INT',
                 'constraint' => 11,
-                'unsigned'   => true,
             ],
             'status' => [
                 'type'       => 'VARCHAR',
-                'constraint' => '50',
+                'constraint' => '255',
                 'null'       => false,
             ],
             'stop_name' => [
                 'type'       => 'VARCHAR',
-                'constraint' => '50',
+                'constraint' => '255',
                 'null'       => false,
             ],
             'distance' => [
                 'type'       => 'INT',
                 'constraint' => 11,
-                'unsigned'   => true,
             ],
             'created_at'  => [
                 'type'       => 'DATETIME',
-                'null'       => true,
+                'null' => false,
             ],
             'updated_at'  => [
                 'type'       => 'DATETIME',

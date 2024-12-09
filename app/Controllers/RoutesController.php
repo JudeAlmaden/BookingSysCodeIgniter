@@ -13,21 +13,38 @@ class RoutesController extends BaseController
     public function index($page = null) {
         $page = $page ?? 1;  // Default to page 1 if not set
     
+        // Check if it's a POST request for route creation
         if ($this->request->getMethod() === 'POST') {
             return $this->createRoute();  // Handle route creation
         } else {
             $routesModel = new Routes();
     
-            $perPage = 20;  // Define the number of routes to show per page
-            $data['routes'] = $routesModel->paginate($perPage, 'default', $page);
+            // Get the search query if it's set, otherwise default to an empty string
+            $search = $this->request->getGet('search') ?? '';
+    
+            // Define the number of routes to show per page
+            $perPage = 20;
+    
+            // If search term exists, filter the routes by name
+            if (!empty($search)) {
+                $data['routes'] = $routesModel->like('name', $search)  // Search for routes where name is like the search term
+                                              ->paginate($perPage, 'default', $page);
+                $data['resultCount'] = $routesModel->like('name', $search)->countAll();  // Get total routes count after filtering
+            } else {
+                // If no search term, return all routes
+                $data['routes'] = $routesModel->paginate($perPage, 'default', $page);
+                $data['resultCount'] = $routesModel->countAll();  // Get total routes count without filtering
+            }
+    
             $data['pager'] = $routesModel->pager;  // Get pager object
             $data['currentPage'] = $page; 
-            $data['totalRoutes'] = $routesModel->countAll();  // Get total routes count
             $data['perPage'] = $perPage;  // Pass per page value to the view
+            $data['search'] = $search;  // Pass the search term to the view (optional, for pre-filling the search bar)
         }
     
         return view('admin/routes', $data);
     }
+    
     
     
     public function viewRoute($id){
@@ -36,9 +53,9 @@ class RoutesController extends BaseController
         $routesStops = new RouteStops();
 
         $data['route'] = $routesModel->find($id);
-        $data['stops'] = $routesStops->where('route', $id)->orderBy('index', 'ASC')->findAll();
-        $data['totalDistance'] = $routesStops->where('route', $id)->selectSum('distance')->first()['distance'] ?? 0;
-        $data['totalStops'] = $routesStops->where('route', $id)->countAllResults();
+        $data['stops'] = $routesStops->where('route_id', $id)->orderBy('index', 'ASC')->findAll();
+        $data['totalDistance'] = $routesStops->where('route_id', $id)->selectSum('distance')->first()['distance'] ?? 0;
+        $data['totalStops'] = $routesStops->where('route_id', $id)->countAllResults();
 
         return view('admin/viewRoute', $data);
     }
@@ -53,7 +70,7 @@ class RoutesController extends BaseController
             $routeStopsModel = new RouteStops();
     
             // First, delete all stops associated with the route
-            $routeStopsModel->where('route', $id)->delete();
+            $routeStopsModel->where('route_id', $id)->delete();
     
             // Then, delete the route itself
             $routesModel->delete($id);
@@ -128,7 +145,7 @@ class RoutesController extends BaseController
                 return redirect()->to('dashboard/routes/1');
             }
             
-    
+
             $routesModel = new Routes();
             $exists = $routesModel->where('name', $this->request->getVar('routeName'))->findAll();
 
@@ -149,18 +166,21 @@ class RoutesController extends BaseController
             $routeStopsModel = new RouteStops();
             $routeStopsData = [];
             $stationIndex = 1; 
+
+            //First element
             $initial = [
-                'route' => $routeID,
+                'route_id' => $routeID,
                 'name' => $_POST['initial'], 
                 'distance' => 0,  
                 'index'=> 0,
             ];
             
+            //Add frst stop to the array
             array_unshift($routeStopsData, $initial);
             
             foreach ($stations as $index => $station) {
                 $routeStopsData[] = [
-                    'route' => $routeID,
+                    'route_id' => $routeID,
                     'name' => $station,
                     'distance' => $distances[$index],
                     'index'=> $stationIndex++,
@@ -207,7 +227,7 @@ class RoutesController extends BaseController
     
         // If a name parameter is provided, filter the routes and limit results
         if ($id) {
-            $stops = $routeStopsModel->like('route', $id)->orderBy('index', 'ASC')->findAll(); // Select up to 5 routes with names containing the search term
+            $stops = $routeStopsModel->like('route_id', $id)->orderBy('index', 'ASC')->findAll(); // Select up to 5 routes with names containing the search term
         } else {
             $stops = $routeStopsModel->findAll(); // Fetch all routes if no name parameter is provided
         }

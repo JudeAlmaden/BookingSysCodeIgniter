@@ -158,7 +158,6 @@ class SchedulesModel extends Model
         }
     }
     
-
     public function checkSeatAvailability($from, $to, $seats, $trip_id)
     {
         try {
@@ -279,42 +278,41 @@ class SchedulesModel extends Model
         }
     }
 
-
     public function cancelledReservation($bookingId)
     {
-    $db = \Config\Database::connect();
-    $builder = $db->table('schedules');
+        $db = \Config\Database::connect();
+        $builder = $db->table('schedules');
 
-    $sql = "
-    UPDATE schedules t1
-    SET t1.reservations = t1.reservations - (
-        SELECT bookings.num_seats
-        FROM bookings
-        WHERE bookings.id = ?
-    )
-    WHERE t1.trip_id IN (
-        SELECT bookings.trip_id
-        FROM bookings
-        WHERE bookings.id = ?
-    )
-    AND t1.stop_index BETWEEN (
-        SELECT t4.stop_index 
-        FROM schedules t4 
-        WHERE t4.trip_id = t1.trip_id 
-        AND t4.stop_name = (SELECT bookings.from FROM bookings WHERE bookings.id = ?)
-    ) AND (
-        SELECT t5.stop_index 
-        FROM schedules t5 
-        WHERE t5.trip_id = t1.trip_id 
-        AND t5.stop_name = (SELECT bookings.to FROM bookings WHERE bookings.id = ?)-1
-    )
-    ";
+        $sql = "
+        UPDATE schedules t1
+        SET t1.reservations = t1.reservations - (
+            SELECT bookings.num_seats
+            FROM bookings
+            WHERE bookings.id = ?
+        )
+        WHERE t1.trip_id IN (
+            SELECT bookings.trip_id
+            FROM bookings
+            WHERE bookings.id = ?
+        )
+        AND t1.stop_index BETWEEN (
+            SELECT t4.stop_index 
+            FROM schedules t4 
+            WHERE t4.trip_id = t1.trip_id 
+            AND t4.stop_name = (SELECT bookings.from FROM bookings WHERE bookings.id = ?)
+        ) AND (
+            SELECT t5.stop_index 
+            FROM schedules t5 
+            WHERE t5.trip_id = t1.trip_id 
+            AND t5.stop_name = (SELECT bookings.to FROM bookings WHERE bookings.id = ?)-1
+        )
+        ";
 
 
-    // Bind the booking ID to all placeholders
-    $result = $db->query($sql, [$bookingId, $bookingId, $bookingId, $bookingId]);
+        // Bind the booking ID to all placeholders
+        $result = $db->query($sql, [$bookingId, $bookingId, $bookingId, $bookingId]);
 
-    return $result ? true : false;
+        return $result ? true : false;
     }
 
     public function approveReservation($bookingId)
@@ -424,17 +422,21 @@ class SchedulesModel extends Model
         try {
             $db = \Config\Database::connect();
     
-            // Get the current date
-            $currentDate = date('Y-m-d');
-            
-            // Query to count completed trips for this month
+            // Get the first day of the current month
+            $startOfMonth = date('Y-m-01 00:00:00');
+
+            // Get the last day of the current month
+            $endOfMonth = date('Y-m-t 23:59:59'); // 't' gives the number of days in the month
+
+            // Query to count completed trips for the current month
             $query = $db->query('
                 SELECT COUNT(DISTINCT t1.trip_id) AS completed_trips_count
                 FROM schedules t1
                 INNER JOIN vehicles ON vehicles.id = t1.vehicle_id
                 WHERE t1.status = "Completed"
                 AND t1.ETA BETWEEN ? AND ?
-            ', [$currentDate.' 00:00:00', $currentDate.' 23:59:59']); // Filter by current month
+            ', [$startOfMonth, $endOfMonth]);
+
     
             // Fetch the result as an array
             $result = $query->getRowArray();

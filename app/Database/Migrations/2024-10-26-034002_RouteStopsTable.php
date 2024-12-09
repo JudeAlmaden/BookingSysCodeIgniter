@@ -44,8 +44,8 @@ class RouteStopsTable extends Migration
             ],
         ]);
         $this->forge->addKey('id', true);  // Primary key
-        $this->forge->createTable('route_stops');
         $this->forge->addForeignKey('route_id', 'routes', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->createTable('route_stops');
     }
 
 public function down()

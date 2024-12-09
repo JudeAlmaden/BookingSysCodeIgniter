@@ -110,7 +110,7 @@
           </li>
 
           <?php
-          $totalPages = ceil($totalBookings / $perPage);
+          $totalPages = ceil($resultCount / $perPage);
           for ($i = 1; $i <= $totalPages; $i++): ?>
               <li class="page-item <?= ($currentPage == $i) ? 'active' : '' ?>">
                   <a class="page-link" href="<?= base_url("dashboard/bookings/$i") ?>"><?= $i ?></a>

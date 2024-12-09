@@ -11,21 +11,20 @@ class CreateVehiclesTable extends Migration
         'id'          => [
             'type'           => 'INT',
             'constraint'     => 11,
-            'unsigned'       => true,
             'auto_increment' => true,
         ],
         'tag'        => [
             'type'       => 'VARCHAR',
-            'constraint' => '120',
+            'constraint' => '255',
             'unique'     => true, 
         ],
         'type'        => [
             'type'       => 'VARCHAR',
-            'constraint' => '120',
+            'constraint' => '255',
         ],
         'description'        => [
             'type'       => 'VARCHAR',
-            'constraint' => '120',
+            'constraint' => '255',
         ],
         'number_seats'       => [
             'type'           => 'INT',
@@ -41,11 +40,11 @@ class CreateVehiclesTable extends Migration
         ],
         'status'        => [
             'type'       => 'VARCHAR',
-            'constraint' => '120',
+            'constraint' => '255',
         ],
         'created_at'  => [
             'type'       => 'DATETIME',
-            'null'       => true,
+            'null' => false,
         ],
         'updated_at'  => [
             'type'       => 'DATETIME',
