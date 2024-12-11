@@ -53,7 +53,7 @@
                         <tr>
                             <td><strong>Status:</strong></td>
                             <td>
-                                <?php echo($booking['status']) ?>
+                                <?php echo ($booking['status']) ?>
                             </td>
                         </tr>
                     </table>
@@ -92,7 +92,7 @@
             </div>
 
 
-            
+
             <!-- Payment Proof Card -->
             <?php if ($payment && $payment['payment_proof']): ?>
                 <div class="card mb-4">
@@ -103,14 +103,14 @@
                         <p>Your payment proof has been submitted.</p>
 
                         <!-- Convert BLOB to base64 for displaying as an image -->
-                        <?php 
+                        <?php
                         // Base64 encode the payment proof BLOB
                         $paymentProof = base64_encode($payment['payment_proof']);
-                        
+
                         // Assuming the file is an image (you can adjust this depending on your image type)
                         echo '<img src="data:image/png;base64,' . $paymentProof . '" alt="Payment Proof" class="img-fluid mb-3" />';
                         ?>
-                        
+
                         <br>
                         <!-- Provide the option to download the proof -->
                         <a href="<?= base_url('payment/downloadProof/' . $payment['id']) ?>" class="btn btn-secondary">

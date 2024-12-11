@@ -60,8 +60,8 @@ $routes->get('stops/search/(:any)', 'RoutesController::searchStop/$1', ['filter'
 $routes->get('vehicles/type/get/(:any)', 'VehiclesController::getVehiclesType/$1', ['filter' => 'noauth']); // Get vehicles by type
 
 // --- User Profile and Logout ---
-$routes->get('/profile', 'User::profile', ['filter' => 'auth']); // User profile (requires authentication)
-$routes->get('/logout', 'User::logout'); // User logout
+$routes->get('/profile', 'User::profile', ['filter' => 'auth']); 
+$routes->get('/logout', 'User::logout'); 
 
 // --- User Booking Routes ---
 $routes->match(['get', 'post'], 'homepage', 'BookingController::index', ['filter' => 'auth']); // Booking homepage (authenticated)
@@ -72,4 +72,3 @@ $routes->get('payment/view/(:num)', 'PaymentController::viewPayment/$1', ['filte
 $routes->get('payment/downloadProof/(:num)', 'PaymentController::downloadProof/$1');
 
 $routes->post('homepage/book', 'BookingController::book', ['filter' => 'auth']); // Post booking request
-

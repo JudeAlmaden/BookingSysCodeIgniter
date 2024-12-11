@@ -3,11 +3,11 @@
 <?= $this->section("body") ?>
 
 <div class="container">
-  <div class="row align-items-center">
-    <div class="col">
-      <h1>Pending Bookings</h1>
+    <div class="row align-items-center">
+        <div class="col">
+            <h1>Pending Bookings</h1>
+        </div>
     </div>
-  </div>
 </div>
 
 <hr>
@@ -77,14 +77,14 @@
                         <td class="text-center">
                             <div class="btn-group-vertical w-100">
                                 <!-- View Button -->
-                                <a href="<?= site_url('dashboard/bookings/approve/' . $booking['id']) ?>" 
-                                class="btn btn-primary w-100 mb-2" title="Approve">
+                                <a href="<?= site_url('dashboard/bookings/approve/' . $booking['id']) ?>"
+                                    class="btn btn-primary w-100 mb-2" title="Approve">
                                     <i class="bi bi-eye"></i> Approve
                                 </a>
 
                                 <!-- Edit Button -->
-                                <a href="<?= site_url('dashboard/bookings/decline/' . $booking['id']) ?>" 
-                                class="btn btn-danger w-100 mb-2" title="Decline">
+                                <a href="<?= site_url('dashboard/bookings/decline/' . $booking['id']) ?>"
+                                    class="btn btn-danger w-100 mb-2" title="Decline" >
                                     <i class="bi bi-pencil-square"></i> Decline
                                 </a>
                             </div>
@@ -104,23 +104,23 @@
 
 
 <nav aria-label="Page navigation example">
-      <ul class="pagination justify-content-end">
-          <li class="page-item <?= ($currentPage == 1) ? 'disabled' : '' ?>">
-              <a class="page-link" href="<?= base_url("dashboard/bookings/" . ($currentPage - 1)) ?>" tabindex="-1" aria-disabled="true">Previous</a>
-          </li>
+    <ul class="pagination justify-content-end">
+        <li class="page-item <?= ($currentPage == 1) ? 'disabled' : '' ?>">
+            <a class="page-link" href="<?= base_url("dashboard/bookings/" . ($currentPage - 1)) ?>" tabindex="-1" aria-disabled="true">Previous</a>
+        </li>
 
-          <?php
-          $totalPages = ceil($resultCount / $perPage);
-          for ($i = 1; $i <= $totalPages; $i++): ?>
-              <li class="page-item <?= ($currentPage == $i) ? 'active' : '' ?>">
-                  <a class="page-link" href="<?= base_url("dashboard/bookings/$i") ?>"><?= $i ?></a>
-              </li>
-          <?php endfor; ?>
+        <?php
+        $totalPages = ceil($resultCount / $perPage);
+        for ($i = 1; $i <= $totalPages; $i++): ?>
+            <li class="page-item <?= ($currentPage == $i) ? 'active' : '' ?>">
+                <a class="page-link" href="<?= base_url("dashboard/bookings/$i") ?>"><?= $i ?></a>
+            </li>
+        <?php endfor; ?>
 
-          <li class="page-item <?= ($currentPage == $totalPages) ? 'disabled' : '' ?>">
-              <a class="page-link" href="<?= base_url("dashboard/bookings/" . ($currentPage + 1)) ?>">Next</a>
-          </li>
-      </ul>
+        <li class="page-item <?= ($currentPage == $totalPages) ? 'disabled' : '' ?>">
+            <a class="page-link" href="<?= base_url("dashboard/bookings/" . ($currentPage + 1)) ?>">Next</a>
+        </li>
+    </ul>
 </nav>
 </div>
 
@@ -162,4 +162,4 @@
 <?php endif; ?>
 
 
-<?= $this->endSection()?>
+<?= $this->endSection() ?>

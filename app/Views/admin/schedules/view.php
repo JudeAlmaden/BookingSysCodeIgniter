@@ -34,8 +34,8 @@
                 Mark as Completed
             </a>
             <!-- Cancel Button -->
-            <a href="<?= base_url('/dashboard/schedules/cancel/' . $id) ?>" class="btn btn-danger" 
-            onclick="return confirm('Are you sure you want to cancel this trip?');">
+            <a href="<?= base_url('/dashboard/schedules/cancel/' . $id) ?>" class="btn btn-danger"
+                onclick="return confirm('Are you sure you want to cancel this trip?');">
                 Cancel the trip
             </a>
         <?php endif; ?>
@@ -72,4 +72,4 @@
 </table>
 
 
-<?= $this->endSection()?>
+<?= $this->endSection() ?>

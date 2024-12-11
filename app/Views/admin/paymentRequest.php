@@ -52,31 +52,31 @@
                                     <?php if ($payment['status'] === 'Approved'): ?>
                                         <span class="badge bg-primary col-12">Payment Approved</span>
                                     <?php elseif ($payment['status'] === 'Pending'): ?>
-                                        <span class="badge bg-warning col-12">Waiting for Confirmation</span>
+                                        <span class="badge bg-warning col-12">Pending</span>
                                     <?php else: ?>
                                         <span class="badge bg-danger col-12">Payment Denied</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <div class="d-flex justify-content-start">
+                                <div class="d-flex justify-content-center gap-1">
                                         <!-- Accept Payment Button -->
-                                        <form action="<?= base_url('payment/approve/' . $payment['id']) ?>" method="POST" class="d-inline col-4">
-                                            <button type="submit" class="btn btn-success  w-100">
-                                                <i class="fas fa-check"></i> Accept Payment
+                                        <form action="<?= base_url('payment/approve/' . $payment['id']) ?>" method="POST" class="d-inline col-auto">
+                                            <button type="submit" class="btn btn-success" style="font-size:12px">
+                                                <i class="fas fa-check"></i> Accept
                                             </button>
                                         </form>
 
                                         <!-- Deny Payment Button -->
-                                        <form action="<?= base_url('payment/reject/' . $payment['id']) ?>" method="POST" class="d-inline col-4">
-                                            <button type="submit" class="btn btn-danger w-100">
-                                                <i class="fas fa-times"></i> Deny Payment
+                                        <form action="<?= base_url('payment/reject/' . $payment['id']) ?>" method="POST" class="d-inline col-auto">
+                                            <button type="submit" class="btn btn-danger w-100" style="font-size:12px">
+                                                <i class="fas fa-times"></i> Deny
                                             </button>
                                         </form>
 
                                         <!-- View Payment Details Button -->
-                                        <form action="<?= base_url('dashboard/payment/view/' . $payment['booking_id']) ?>" method="GET" class="d-inline col-4">
-                                            <button type="submit" class="btn btn-primary me-2 w-100">
-                                                <i class="fas fa-eye"></i> View Details
+                                        <form action="<?= base_url('dashboard/payment/view/' . $payment['booking_id']) ?>" method="GET" class="d-inline col-auto">
+                                            <button type="submit" class="btn btn-primary me-2 w-100" style="font-size:12px">
+                                                <i class="fas fa-eye"></i> View 
                                             </button>
                                         </form>
                                     </div>

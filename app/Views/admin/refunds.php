@@ -42,7 +42,7 @@
                                 <td>
                                     <div class="d-flex justify-content-start">
                                         <form action="<?= base_url('dashboard/payment/view/' . $payment['booking_id']) ?>" method="GET" class="d-inline col-12">
-                                            <button type="submit" class="btn btn-primary me-2 w-100">
+                                            <button type="submit" class="btn btn-primary me-2 w-100" style="font-size:12px">
                                                 <i class="fas fa-eye"></i> View Details
                                             </button>
                                         </form>

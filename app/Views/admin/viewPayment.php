@@ -57,7 +57,7 @@
                         <tr>
                             <td><strong>Status:</strong></td>
                             <td>
-                                <?php echo($booking['status']) ?>
+                                <?php echo ($booking['status']) ?>
                             </td>
                         </tr>
                     </table>
@@ -101,10 +101,10 @@
                         <p>Your payment proof has been submitted.</p>
 
                         <!-- Convert BLOB to base64 for displaying as an image -->
-                        <?php 
+                        <?php
                         // Base64 encode the payment proof BLOB
                         $paymentProof = base64_encode($payment['payment_proof']);
-                        
+
                         // Assuming the file is an image (you can adjust this depending on your image type)
                         echo '<img src="data:image/png;base64,' . $paymentProof . '" alt="Payment Proof" class="img-fluid mb-3" />';
                         ?>

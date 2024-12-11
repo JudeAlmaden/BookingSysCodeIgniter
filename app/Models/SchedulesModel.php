@@ -76,13 +76,13 @@ class SchedulesModel extends Model
     protected $skipValidation = false;
 
     
-    
-    //Seach query for user to for all schedueled trips
-    public function getScheduledTripsFiltered($fromLocation, $toLocation, $type, $date, $seats) {
+
+    //Search query for user to for all scheduled trips
+    public function getScheduledTripsFiltered($fromLocation, $toLocation, $type, $date = 0, $seats) {
         try {
             $db = \Config\Database::connect();
-            $currentTime = date('Y-m-d H:i:s'); // Get the current time
-    
+            $currentTime = date('Y-m-d H:i:s'); 
+
             $query = $db->query('
                 WITH trips AS (
                     SELECT 
@@ -97,19 +97,17 @@ class SchedulesModel extends Model
                         MAX(t1.reservations) AS occupied_seats,
                         t1.reservations,
                         (SELECT SUM(dist.distance) 
-                         FROM schedules dist 
-                         WHERE dist.trip_id = t1.trip_id 
-                           AND dist.stop_index BETWEEN (
-                                SELECT stop_index 
-                                FROM schedules 
-                                WHERE trip_id = t1.trip_id AND stop_name = ?
-                                LIMIT 1
-                           ) + 1 AND (
-                                SELECT stop_index 
-                                FROM schedules 
-                                WHERE trip_id = t1.trip_id AND stop_name = ?
-                                LIMIT 1
-                           )
+                        FROM schedules dist 
+                        WHERE dist.trip_id = t1.trip_id 
+                        AND dist.stop_index BETWEEN (
+                            SELECT stop_index 
+                            FROM schedules 
+                            WHERE trip_id = t1.trip_id AND stop_name = ?
+                        ) + 1 AND (
+                            SELECT stop_index 
+                            FROM schedules 
+                            WHERE trip_id = t1.trip_id AND stop_name = ?
+                        )
                         ) AS total_distance,
                         t1.stop_index AS from_stop_index,
                         t1.stop_name AS from_stop_name,
@@ -144,25 +142,24 @@ class SchedulesModel extends Model
                 SELECT * FROM trips 
                 WHERE 
                     available_seats >= reservations + ?
-                    AND departure LIKE ?
-                    AND (
-                        ? LIKE "%" AND departure > ?
-                    )
+                    AND departure > ?
+                    AND departure > ?
                 ORDER BY departure
             ', [
                 $fromLocation, $toLocation, $toLocation, $fromLocation, $toLocation, 
-                $fromLocation, $toLocation, $type, $seats, $date, $date, $currentTime
+                $fromLocation, $toLocation, $type, $seats,$currentTime,$date
             ]);
-    
+
             return $query->getResultArray();
-    
-        } catch (Exception $e) {
+
+        } catch (PDOException $e) {
             session()->setFlashdata('errors', $e->getMessage());
             return null;
         }
     }
 
-    //Checks if curretn capacity and checks whether the requested seats will fit
+
+    //Checks if requested seats will fit on the current_capacity of two ranges, also checks if the said range is "Available"
     public function checkSeatAvailability($from, $to, $seats, $trip_id)
     {
         try {
@@ -199,7 +196,6 @@ class SchedulesModel extends Model
                 GROUP BY t1.trip_id;
             ', [$from, $to, $seats, $trip_id]);
 
-            // Fetch the row as an object or array
             return $query->getRow();
         } catch (Exception $e) {
             // Handle any exceptions
@@ -208,7 +204,7 @@ class SchedulesModel extends Model
         }
     }
 
-    //Gets the max occupied eats of a given range of a trip
+    //Gets occupied seats, does not are whether it is at max capacity
     public function getCurrentCapacity($from, $to, $trip_id)
     {
         try {
@@ -240,12 +236,11 @@ class SchedulesModel extends Model
                 GROUP BY t1.trip_id;
             ', [$from, $to, $trip_id]);
 
-            // Fetch the row as an object or array
             return $query->getRow();
         } catch (Exception $e) {
             // Handle any exceptions
             log_message('error', $e->getMessage());
-            return null; // or handle error as appropriate
+            return null; 
         }
     }
 

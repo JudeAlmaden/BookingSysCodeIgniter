@@ -46,30 +46,27 @@ class Bookings extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
     
-    //
+    //Cancels all bookings with a trip id
     public function updateCancelledTrip($id)
     {
         try {
             // Connect to the database
             $db = \Config\Database::connect();
             
-            // Prepare the SQL query to perform a LEFT JOIN with the payments table
             $sql = "UPDATE bookings
                     JOIN payments ON payments.booking_id = bookings.id
                     SET bookings.status = 'Cancelled', payments.status = 'Waiting for refund'
                     WHERE bookings.trip_id = ? AND payments.status = 'Approved'";
 
-            // Execute the query with the bound parameter for trip_id
             $query = $db->query($sql, [$id]);
             
-            // Check if the update was successful
             if ($db->affectedRows() > 0) {
                 return redirect()->back()->with('success', 'All bookings for the trip have been marked as waiting for refund.');
             } else {
                 return redirect()->back()->with('error', 'No bookings found for the specified trip or update failed.');
             }
         } catch (\Exception $e) {
-            // Handle any errors
+
             return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
@@ -100,6 +97,7 @@ class Bookings extends Model
         }
     }
 
+    //Get booking info
     public function getBooking($bookingId)
     {
         // Update the reservations for the schedule
@@ -113,6 +111,7 @@ class Bookings extends Model
         return $query->getRow();
     }
     
+    //Cancel all trips of a vehicle, includes handling the bookings and payments
     public function cancelTripsByVehicle($vehicleId)
     {
         $db = \Config\Database::connect();
@@ -169,6 +168,7 @@ class Bookings extends Model
         }
     }
 
+    //Cancels a specific booking
     public function cancelBookingAndPayment($bookingId)
     {
         $db = \Config\Database::connect();

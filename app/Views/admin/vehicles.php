@@ -100,19 +100,21 @@
           <td><?= $vehicle['per_kilometer'] ?></td>
           <td><?= $vehicle['status'] ?></td>
           <td>
-            <a href="<?= site_url('dashboard/vehicles/toggle/' . $vehicle['id']) ?>" 
-              class="btn btn-warning col-5 mb-2" 
+            <a href="<?= site_url('dashboard/vehicles/toggle/' . $vehicle['id']) ?>"
+              class="btn btn-warning col-5 mb-2 col-md-12"
+              style="font-size:12px"
               onclick="return confirm('Are you sure you want to change the status of this vehicle? This will cancel all bookings and trips associated');">
               <i class="bi bi-pencil-square"></i>Toggle
             </a>
-            <button class="btn btn-primary col-5 mb-2 edit-btn" 
-                    data-id="<?= $vehicle['id'] ?>"
-                    data-tag="<?= $vehicle['tag'] ?>"
-                    data-type="<?= $vehicle['type'] ?>"
-                    data-description="<?= $vehicle['description'] ?>"
-                    data-number_seats="<?= $vehicle['number_seats'] ?>"
-                    data-base_fare="<?= $vehicle['base_fare'] ?>"
-                    data-per_kilometer="<?= $vehicle['per_kilometer'] ?>">
+            <button class="btn btn-primary col-5 mb-2 col-md-12"
+              style="font-size:12px"
+              data-id="<?= $vehicle['id'] ?>"
+              data-tag="<?= $vehicle['tag'] ?>"
+              data-type="<?= $vehicle['type'] ?>"
+              data-description="<?= $vehicle['description'] ?>"
+              data-number_seats="<?= $vehicle['number_seats'] ?>"
+              data-base_fare="<?= $vehicle['base_fare'] ?>"
+              data-per_kilometer="<?= $vehicle['per_kilometer'] ?>">
               <i class="bi bi-pencil-square"></i> Edit
             </button>
           </td>
@@ -157,61 +159,61 @@
 </script>
 
 
-  <nav aria-label="Page navigation example">
-      <ul class="pagination justify-content-end">
-          <li class="page-item <?= ($currentPage == 1) ? 'disabled' : '' ?>">
-              <a class="page-link" href="<?= site_url("dashboard/routes/" . ($currentPage - 1)) ?>" tabindex="-1" aria-disabled="true">Previous</a>
-          </li>
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-end">
+    <li class="page-item <?= ($currentPage == 1) ? 'disabled' : '' ?>">
+      <a class="page-link" href="<?= site_url("dashboard/routes/" . ($currentPage - 1)) ?>" tabindex="-1" aria-disabled="true">Previous</a>
+    </li>
 
-          <?php
-          $totalPages = ceil($resultCount / $perPage);
-          for ($i = 1; $i <= $totalPages; $i++): ?>
-              <li class="page-item <?= ($currentPage == $i) ? 'active' : '' ?>">
-                  <a class="page-link" href="<?= site_url("dashboard/routes/$i") ?>"><?= $i ?></a>
-              </li>
-          <?php endfor; ?>
+    <?php
+    $totalPages = ceil($resultCount / $perPage);
+    for ($i = 1; $i <= $totalPages; $i++): ?>
+      <li class="page-item <?= ($currentPage == $i) ? 'active' : '' ?>">
+        <a class="page-link" href="<?= site_url("dashboard/routes/$i") ?>"><?= $i ?></a>
+      </li>
+    <?php endfor; ?>
 
-          <li class="page-item <?= ($currentPage == $totalPages) ? 'disabled' : '' ?>">
-              <a class="page-link" href="<?= site_url("dashboard/routes/" . ($currentPage + 1)) ?>">Next</a>
-          </li>
-      </ul>
-  </nav>
+    <li class="page-item <?= ($currentPage == $totalPages) ? 'disabled' : '' ?>">
+      <a class="page-link" href="<?= site_url("dashboard/routes/" . ($currentPage + 1)) ?>">Next</a>
+    </li>
+  </ul>
+</nav>
 </div>
 
 <?php if (session()->getFlashdata('errors')): ?>
-    <div class="alert alert-danger">
-        <ul>
-            <?php
-            $errors = session()->getFlashdata('errors');
-            if (is_array($errors)) {
-                foreach ($errors as $error) {
-                    echo '<li>' . esc($error) . '</li>';
-                }
-            } else {
-                // If it's a string, display it as a single item
-                echo '<li>' . esc($errors) . '</li>';
-            }
-            ?>
-        </ul>
-    </div>
+  <div class="alert alert-danger">
+    <ul>
+      <?php
+      $errors = session()->getFlashdata('errors');
+      if (is_array($errors)) {
+        foreach ($errors as $error) {
+          echo '<li>' . esc($error) . '</li>';
+        }
+      } else {
+        // If it's a string, display it as a single item
+        echo '<li>' . esc($errors) . '</li>';
+      }
+      ?>
+    </ul>
+  </div>
 <?php endif; ?>
 
 
 <?php if (session()->getFlashdata('success')): ?>
-    <div class="alert alert-success">
-        <ul>
-            <?php
-            $success = session()->getFlashdata('success');
-            if (is_array($success)) {
-                foreach ($success as $succ) {
-                    echo '<li>' . esc($succ) . '</li>';
-                }
-            } else {
-                // If it's a string, display it as a single item
-                echo '<li>' . esc($success) . '</li>';
-            }
-            ?>
-        </ul>
-    </div>
+  <div class="alert alert-success">
+    <ul>
+      <?php
+      $success = session()->getFlashdata('success');
+      if (is_array($success)) {
+        foreach ($success as $succ) {
+          echo '<li>' . esc($succ) . '</li>';
+        }
+      } else {
+        // If it's a string, display it as a single item
+        echo '<li>' . esc($success) . '</li>';
+      }
+      ?>
+    </ul>
+  </div>
 <?php endif; ?>
-<?= $this->endSection()?>
+<?= $this->endSection() ?>

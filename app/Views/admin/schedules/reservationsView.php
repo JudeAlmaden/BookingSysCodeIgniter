@@ -7,7 +7,7 @@
 </a>
 
 <div class="container mt-5">
-    <h4 class="text-center text-primary mb-4">Booked Passengers for 
+    <h4 class="text-center text-primary mb-4">Booked Passengers for
         <span class="text-uppercase"><?= esc($stop['stop_name']) ?></span>
     </h4>
 
