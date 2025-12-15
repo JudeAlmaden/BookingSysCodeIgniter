@@ -1,68 +1,26 @@
-# CodeIgniter 4 Application Starter
+Vehicle Booking With Routes, Made using Codeigniter and Bootstrap
 
-## What is CodeIgniter?
+The Seat Reservation System (SRS) is designed to manage and facilitate the process of reserving seats for vehicles, payment tracking, and administration capabilities ensuring a smooth and user-friendly experience. Below are the key components, functionalities, and technical requirements necessary for the system.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+Admin Dashboard: The Admin Dashboard provides a centralized platform for managing the system's core functionalities. Administrators can:
+o	Oversee and manage user booking and payment request.
+o	Monitor payment statuses.
+o	Provide list of passengers for each stop.
+o	Configure trip schedules, routes, and seat availability,
+o	Cancellation and changing of vehicle statuses and trips.
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
-
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
-
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
-
-## Installation & updates
-
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
-
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
-
-## Setup
-
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
-
-## Important Change with index.php
-
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
-
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
-
-**Please** read the user guide for a better explanation of how CI4 works!
-
-## Repository Management
-
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
-
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
-
-## Server Requirements
-
-PHP version 8.1 or higher is required, with the following extensions installed:
-
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
-
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
-
-Additionally, make sure that the following extensions are enabled in your PHP:
-
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+<img width="786" height="381" alt="image" src="https://github.com/user-attachments/assets/de960d95-f656-4ebb-9081-c04f738c639a" />
+<img width="929" height="462" alt="image" src="https://github.com/user-attachments/assets/903638f7-9d77-46a3-b75c-c555ddb1663b" />
+<img width="934" height="463" alt="image" src="https://github.com/user-attachments/assets/6f0b9ad4-eed6-4c1c-adab-43b0f35b068c" />
+<img width="923" height="465" alt="image" src="https://github.com/user-attachments/assets/7b8f07c0-d2a6-417c-bd84-201644a0ed97" />
+<img width="927" height="459" alt="image" src="https://github.com/user-attachments/assets/843e172f-f9c4-4c29-9bfa-55aa4cdc5792" />
+<img width="914" height="458" alt="image" src="https://github.com/user-attachments/assets/c1119d00-1663-4b85-acb2-89b03faf131e" />
+<img width="908" height="457" alt="image" src="https://github.com/user-attachments/assets/5f9d91c5-9141-4ad1-b24c-5f6772638719" />
+<img width="901" height="448" alt="image" src="https://github.com/user-attachments/assets/22d0ef2d-b82b-454d-aafc-b84e8a8e7147" />
+<img width="832" height="420" alt="image" src="https://github.com/user-attachments/assets/9a7c6427-fad4-4d9d-b9f2-9edc3c0e82f0" />
+<img width="890" height="451" alt="image" src="https://github.com/user-attachments/assets/c6cad5e8-1416-4d49-a4e3-5a31965de52c" />
+<img width="890" height="450" alt="image" src="https://github.com/user-attachments/assets/0e0b9177-82e0-460c-af77-fcb05cb416ca" />
+<img width="904" height="454" alt="image" src="https://github.com/user-attachments/assets/47e4cf16-3041-4b8c-bc75-30d92b6182c8" />
+<img width="944" height="476" alt="image" src="https://github.com/user-attachments/assets/659ed3f3-4196-48ba-8fdd-0374e13de90b" />
+<img width="942" height="475" alt="image" src="https://github.com/user-attachments/assets/892d7f44-2d8e-4302-a4f8-ac6b31ea55dc" />
+<img width="827" height="421" alt="image" src="https://github.com/user-attachments/assets/557955b6-4891-4c02-ac54-e33f7e669817" />
